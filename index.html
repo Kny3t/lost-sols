@@ -1,0 +1,1898 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lost Sols — SAM-B Chronicle Archive</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&family=Cinzel:wght@400;500;600&family=EB+Garamond:ital,wght@0,400;0,500;1,400;1,500&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  /* Core palette */
+  --void:        #05070a;
+  --deep:        #080b10;
+  --obsidian:    #0d1118;
+  --slate:       #111720;
+  --steel:       #1a2230;
+  --mist:        #2a3545;
+
+  /* Fantasy warm */
+  --amber:       #c8892a;
+  --gold:        #e8b84b;
+  --ember:       #a0521a;
+  --parchment:   #d8ccb0;
+  --bone:        #b8ad94;
+
+  /* Tech cold */
+  --cyan:        #4dd9c0;
+  --cyan-dim:    #2a8a78;
+  --cyan-ghost:  #1a4a42;
+  --scan:        rgba(77,217,192,0.06);
+
+  /* Danger/sealed */
+  --crimson:     #8b1a1a;
+  --rust:        #c0392b;
+
+  /* Text */
+  --text-primary:   #d8ccb0;
+  --text-secondary: #8a9aaa;
+  --text-mono:      #4dd9c0;
+  --text-dim:       #4a5568;
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  background-color: var(--void);
+  color: var(--text-primary);
+  font-family: 'EB Garamond', Georgia, serif;
+  font-size: 18px;
+  line-height: 1.75;
+  overflow-x: hidden;
+  cursor: default;
+}
+
+/* ── STAR FIELD ── */
+.starfield {
+  position: fixed; inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  overflow: hidden;
+}
+
+.star {
+  position: absolute;
+  background: #fff;
+  border-radius: 50%;
+  animation: twinkle ease-in-out infinite;
+}
+
+@keyframes twinkle {
+  0%, 100% { opacity: 0.1; }
+  50% { opacity: 0.7; }
+}
+
+/* ── SCAN LINE OVERLAY ── */
+body::after {
+  content: '';
+  position: fixed; inset: 0;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 3px,
+    rgba(0,0,0,0.03) 3px,
+    rgba(0,0,0,0.03) 4px
+  );
+  pointer-events: none;
+  z-index: 9998;
+}
+
+/* ── SAMB PERSISTENT HUD ── */
+.samb-hud {
+  position: fixed;
+  bottom: 1.5rem; right: 1.5rem;
+  z-index: 200;
+  display: flex; flex-direction: column; align-items: flex-end; gap: 0.5rem;
+}
+
+.samb-cube {
+  width: 36px; height: 36px;
+  position: relative;
+  animation: cube-spin 8s linear infinite;
+  cursor: pointer;
+}
+
+.samb-cube svg { width: 100%; height: 100%; }
+
+@keyframes cube-spin {
+  0%   { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.samb-log {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.6rem;
+  color: var(--cyan);
+  text-align: right;
+  opacity: 0.7;
+  max-width: 200px;
+  line-height: 1.4;
+}
+
+.samb-log .blink {
+  animation: blink 1.2s step-end infinite;
+}
+
+@keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
+
+/* ── MONO UTILITY ── */
+.mono {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.68rem;
+  color: var(--cyan);
+  letter-spacing: 0.05em;
+}
+
+.mono-label {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.62rem;
+  color: var(--cyan-dim);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+/* ── NAV ── */
+nav {
+  position: fixed; top: 0; left: 0; right: 0;
+  z-index: 100;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 1.2rem 3rem;
+  background: linear-gradient(to bottom, rgba(5,7,10,0.98) 0%, transparent 100%);
+  border-bottom: 1px solid rgba(77,217,192,0.08);
+}
+
+.nav-brand {
+  display: flex; flex-direction: column; gap: 0.15rem;
+}
+
+.nav-title {
+  font-family: 'Cinzel Decorative', serif;
+  font-size: 1rem;
+  letter-spacing: 0.1em;
+  color: var(--gold);
+  text-decoration: none;
+  line-height: 1;
+}
+
+.nav-sub {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.52rem;
+  color: var(--cyan-dim);
+  letter-spacing: 0.15em;
+}
+
+.nav-links {
+  display: flex; gap: 2rem;
+  list-style: none;
+}
+
+.nav-links a {
+  font-family: 'Cinzel', serif;
+  font-size: 0.72rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--bone);
+  text-decoration: none;
+  transition: color 0.3s;
+  position: relative;
+}
+
+.nav-links a::after {
+  content: '';
+  position: absolute; bottom: -3px; left: 0; right: 0;
+  height: 1px;
+  background: var(--cyan);
+  transform: scaleX(0);
+  transition: transform 0.3s;
+}
+
+.nav-links a:hover { color: var(--cyan); }
+.nav-links a:hover::after { transform: scaleX(1); }
+
+/* ── HERO ── */
+.hero {
+  min-height: 100vh;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  position: relative;
+  padding: 7rem 2rem 5rem;
+  text-align: center;
+  z-index: 1;
+}
+
+.hero-grid-overlay {
+  position: absolute; inset: 0;
+  background-image:
+    linear-gradient(rgba(77,217,192,0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(77,217,192,0.03) 1px, transparent 1px);
+  background-size: 60px 60px;
+  mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, black 20%, transparent 100%);
+  pointer-events: none;
+}
+
+.hero-glow {
+  position: absolute; inset: 0;
+  background:
+    radial-gradient(ellipse 50% 40% at 50% 60%, rgba(77,217,192,0.04) 0%, transparent 70%),
+    radial-gradient(ellipse 70% 50% at 50% 20%, rgba(200,137,42,0.05) 0%, transparent 60%);
+  pointer-events: none;
+}
+
+.hero-inner { position: relative; z-index: 2; max-width: 860px; }
+
+/* Sam-B boot sequence */
+.hero-boot {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.65rem;
+  color: var(--cyan-dim);
+  letter-spacing: 0.1em;
+  margin-bottom: 2.5rem;
+  opacity: 0;
+  animation: fadeIn 0.5s ease 0.2s forwards;
+}
+
+.boot-line {
+  display: block;
+  opacity: 0;
+  animation: typeIn 0.4s ease forwards;
+  text-align: left;
+  max-width: 420px;
+  margin: 0 auto;
+}
+
+.boot-line:nth-child(1) { animation-delay: 0.4s; }
+.boot-line:nth-child(2) { animation-delay: 0.9s; }
+.boot-line:nth-child(3) { animation-delay: 1.4s; }
+.boot-line:nth-child(4) { animation-delay: 1.9s; color: var(--cyan); }
+
+@keyframes typeIn {
+  from { opacity: 0; transform: translateX(-8px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+.hero-eyebrow {
+  font-family: 'Cinzel', serif;
+  font-size: 0.72rem;
+  letter-spacing: 0.35em;
+  text-transform: uppercase;
+  color: var(--cyan-dim);
+  margin-bottom: 1.5rem;
+  opacity: 0;
+  animation: fadeUp 1s ease 2.5s forwards;
+}
+
+.hero-title {
+  font-family: 'Cinzel Decorative', serif;
+  font-size: clamp(3rem, 9vw, 7rem);
+  font-weight: 700;
+  line-height: 1.05;
+  margin-bottom: 0.15em;
+  opacity: 0;
+  animation: fadeUp 1s ease 2.7s forwards;
+  position: relative;
+}
+
+.hero-title .word-lost { color: var(--parchment); }
+.hero-title .word-sols {
+  color: var(--gold);
+  position: relative;
+}
+
+/* Glitch effect on SOLS */
+.hero-title .word-sols::before {
+  content: 'Sols';
+  position: absolute; inset: 0;
+  color: var(--cyan);
+  clip-path: polygon(0 0, 100% 0, 100% 35%, 0 35%);
+  animation: glitch 6s ease 4s infinite;
+  opacity: 0;
+}
+
+@keyframes glitch {
+  0%, 90%, 100% { opacity: 0; transform: translate(0,0); }
+  91% { opacity: 0.6; transform: translate(-3px, 1px); }
+  92% { opacity: 0; }
+  93% { opacity: 0.4; transform: translate(3px, -1px); }
+  94% { opacity: 0; }
+}
+
+.hero-series-tag {
+  display: inline-flex; align-items: center; gap: 1rem;
+  margin-bottom: 2.5rem;
+  opacity: 0;
+  animation: fadeUp 1s ease 2.9s forwards;
+}
+
+.series-tag-line { width: 40px; height: 1px; background: var(--cyan-dim); }
+
+.series-tag-text {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.65rem;
+  letter-spacing: 0.2em;
+  color: var(--cyan-dim);
+}
+
+.hero-desc {
+  font-size: 1.1rem;
+  color: var(--bone);
+  max-width: 580px;
+  margin: 0 auto 3rem;
+  font-style: italic;
+  line-height: 1.85;
+  opacity: 0;
+  animation: fadeUp 1s ease 3.1s forwards;
+}
+
+.hero-cta {
+  display: inline-flex; gap: 1rem;
+  flex-wrap: wrap; justify-content: center;
+  opacity: 0;
+  animation: fadeUp 1s ease 3.3s forwards;
+}
+
+.btn {
+  font-family: 'Cinzel', serif;
+  font-size: 0.75rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  padding: 0.85em 2.2em;
+  text-decoration: none;
+  transition: all 0.3s;
+  position: relative;
+  cursor: pointer;
+  border: none;
+}
+
+.btn-primary {
+  background: transparent;
+  color: var(--gold);
+  border: 1px solid var(--amber);
+  box-shadow: inset 0 0 20px rgba(200,137,42,0.05), 0 0 20px rgba(200,137,42,0.08);
+}
+
+.btn-primary:hover {
+  background: rgba(200,137,42,0.1);
+  box-shadow: inset 0 0 30px rgba(200,137,42,0.1), 0 0 30px rgba(200,137,42,0.2);
+  transform: translateY(-2px);
+}
+
+.btn-tech {
+  background: transparent;
+  color: var(--cyan);
+  border: 1px solid var(--cyan-dim);
+  box-shadow: inset 0 0 20px rgba(77,217,192,0.03), 0 0 20px rgba(77,217,192,0.05);
+}
+
+.btn-tech:hover {
+  background: rgba(77,217,192,0.06);
+  box-shadow: inset 0 0 30px rgba(77,217,192,0.08), 0 0 30px rgba(77,217,192,0.15);
+  transform: translateY(-2px);
+}
+
+/* ── DUAL DIVIDER ── */
+.dual-divider {
+  display: flex; align-items: center; gap: 0;
+  overflow: hidden;
+  position: relative;
+  z-index: 1;
+  margin: 0;
+}
+
+.divider-fantasy {
+  flex: 1; height: 1px;
+  background: linear-gradient(to right, transparent, var(--amber), transparent);
+  opacity: 0.3;
+}
+
+.divider-tech {
+  flex: 1; height: 1px;
+  background: linear-gradient(to right, transparent, var(--cyan-dim), transparent);
+  opacity: 0.4;
+}
+
+.divider-node {
+  width: 6px; height: 6px;
+  background: var(--cyan);
+  transform: rotate(45deg);
+  box-shadow: 0 0 8px var(--cyan);
+  flex-shrink: 0;
+}
+
+/* ── SECTION BASE ── */
+.section-wrap {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 6rem 2rem;
+  position: relative;
+  z-index: 1;
+}
+
+.section-header { margin-bottom: 3.5rem; }
+
+.section-mono-label {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.6rem;
+  color: var(--cyan-dim);
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  margin-bottom: 0.6rem;
+  display: flex; align-items: center; gap: 0.6rem;
+}
+
+.section-mono-label::before {
+  content: '//';
+  color: var(--cyan);
+  opacity: 0.6;
+}
+
+.section-title {
+  font-family: 'Cinzel Decorative', serif;
+  font-size: clamp(1.6rem, 3.5vw, 2.6rem);
+  color: var(--parchment);
+  line-height: 1.2;
+}
+
+.section-title .accent { color: var(--gold); }
+.section-title .accent-tech { color: var(--cyan); }
+
+/* ── WORLD SECTION ── */
+.world-grid {
+  display: grid;
+  grid-template-columns: 1fr 1.2fr;
+  gap: 5rem;
+  align-items: center;
+}
+
+.world-artifact {
+  position: relative;
+  display: flex; align-items: center; justify-content: center;
+}
+
+/* The merkaba/artifact frame */
+.artifact-frame {
+  width: 280px; height: 340px;
+  position: relative;
+  display: flex; align-items: center; justify-content: center;
+}
+
+.artifact-outer {
+  position: absolute; inset: 0;
+  border: 1px solid rgba(77,217,192,0.15);
+  transform: rotate(0deg);
+  animation: artifact-rotate 20s linear infinite;
+}
+
+.artifact-inner {
+  position: absolute; inset: 20px;
+  border: 1px solid rgba(200,137,42,0.12);
+  transform: rotate(45deg);
+  animation: artifact-rotate-reverse 15s linear infinite;
+}
+
+.artifact-core {
+  width: 200px; height: 240px;
+  background:
+    linear-gradient(135deg, rgba(77,217,192,0.04) 0%, transparent 50%),
+    linear-gradient(225deg, rgba(200,137,42,0.06) 0%, transparent 50%),
+    var(--slate);
+  border: 1px solid rgba(77,217,192,0.1);
+  display: flex; align-items: center; justify-content: center;
+  flex-direction: column; gap: 1rem;
+  position: relative;
+  z-index: 2;
+}
+
+.artifact-scan {
+  position: absolute; top: 0; left: 0; right: 0;
+  height: 2px;
+  background: linear-gradient(to right, transparent, var(--cyan), transparent);
+  animation: scan-down 4s ease-in-out infinite;
+  opacity: 0.5;
+}
+
+@keyframes scan-down {
+  0%   { top: 0%; opacity: 0; }
+  10%  { opacity: 0.5; }
+  90%  { opacity: 0.5; }
+  100% { top: 100%; opacity: 0; }
+}
+
+.artifact-placeholder-icon {
+  font-family: 'Cinzel Decorative', serif;
+  font-size: 2rem;
+  color: var(--amber);
+  opacity: 0.25;
+}
+
+.artifact-placeholder-text {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.58rem;
+  color: var(--cyan-dim);
+  letter-spacing: 0.15em;
+  text-align: center;
+  text-transform: uppercase;
+  opacity: 0.6;
+}
+
+.artifact-corner {
+  position: absolute;
+  width: 10px; height: 10px;
+  border-color: var(--cyan-dim);
+  border-style: solid;
+  opacity: 0.4;
+}
+
+.artifact-corner.tl { top: 8px; left: 8px; border-width: 1px 0 0 1px; }
+.artifact-corner.tr { top: 8px; right: 8px; border-width: 1px 1px 0 0; }
+.artifact-corner.bl { bottom: 8px; left: 8px; border-width: 0 0 1px 1px; }
+.artifact-corner.br { bottom: 8px; right: 8px; border-width: 0 1px 1px 0; }
+
+@keyframes artifact-rotate {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+@keyframes artifact-rotate-reverse {
+  from { transform: rotate(45deg); }
+  to   { transform: rotate(-315deg); }
+}
+
+.world-text p {
+  color: var(--bone);
+  margin-bottom: 1.4rem;
+  font-size: 1.05rem;
+  line-height: 1.9;
+}
+
+.world-text p:first-of-type::first-letter {
+  font-family: 'Cinzel Decorative', serif;
+  font-size: 3.2em;
+  float: left;
+  line-height: 0.8;
+  margin: 0.05em 0.1em 0 0;
+  color: var(--amber);
+}
+
+.world-data-row {
+  display: flex; gap: 2rem;
+  flex-wrap: wrap;
+  margin-top: 2rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid rgba(77,217,192,0.08);
+}
+
+.world-data-item {}
+
+.world-data-key {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.58rem;
+  color: var(--cyan-dim);
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  margin-bottom: 0.2rem;
+}
+
+.world-data-val {
+  font-family: 'Cinzel', serif;
+  font-size: 0.85rem;
+  color: var(--parchment);
+  letter-spacing: 0.05em;
+}
+
+/* ── CHRONICLE SECTION ── */
+.chronicle-wrap {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 6rem 2rem;
+  position: relative;
+  z-index: 1;
+}
+
+.chronicle-header {
+  display: flex; align-items: flex-end; justify-content: space-between;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap; gap: 1rem;
+}
+
+.chronicle-integrity {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.6rem;
+  color: var(--cyan-dim);
+  letter-spacing: 0.1em;
+  text-align: right;
+}
+
+.integrity-bar-wrap {
+  width: 140px; height: 3px;
+  background: var(--steel);
+  margin-top: 4px;
+  position: relative;
+}
+
+.integrity-bar {
+  height: 100%;
+  width: 28%;
+  background: linear-gradient(to right, var(--cyan-dim), var(--cyan));
+  position: relative;
+}
+
+.integrity-bar::after {
+  content: '';
+  position: absolute; right: 0; top: -2px;
+  width: 1px; height: 7px;
+  background: var(--cyan);
+  box-shadow: 0 0 4px var(--cyan);
+}
+
+/* Sam-B narrator box */
+.samb-narrator {
+  border: 1px solid rgba(77,217,192,0.12);
+  background: rgba(77,217,192,0.02);
+  padding: 1.2rem 1.5rem;
+  margin-bottom: 3rem;
+  position: relative;
+}
+
+.samb-narrator::before {
+  content: 'SAM-B // ARCHIVE ENTRY';
+  position: absolute;
+  top: -0.5em; left: 1rem;
+  background: var(--void);
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.55rem;
+  color: var(--cyan);
+  letter-spacing: 0.15em;
+  padding: 0 0.5rem;
+}
+
+.samb-narrator p {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.7rem;
+  color: var(--cyan-dim);
+  line-height: 1.7;
+  letter-spacing: 0.03em;
+}
+
+.samb-narrator p span { color: var(--cyan); }
+
+/* Timeline track */
+.chronicle-track {
+  position: relative;
+  padding-left: 0;
+}
+
+/* Vertical timeline line */
+.chronicle-track::before {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 0; bottom: 0;
+  width: 1px;
+  background: linear-gradient(to bottom,
+    var(--cyan-dim),
+    rgba(77,217,192,0.3) 40%,
+    rgba(77,217,192,0.08) 70%,
+    transparent 100%
+  );
+  transform: translateX(-50%);
+}
+
+/* Era entries */
+.era-entry {
+  display: grid;
+  grid-template-columns: 1fr 60px 1fr;
+  gap: 0;
+  margin-bottom: 3rem;
+  align-items: start;
+}
+
+/* Left content */
+.era-left {
+  padding-right: 2.5rem;
+  text-align: right;
+}
+
+/* Right content */
+.era-right {
+  padding-left: 2.5rem;
+}
+
+/* Center node */
+.era-node-col {
+  display: flex; flex-direction: column; align-items: center;
+  position: relative;
+  padding-top: 0.5rem;
+}
+
+.era-node {
+  width: 14px; height: 14px;
+  border: 1px solid var(--cyan);
+  transform: rotate(45deg);
+  position: relative;
+  z-index: 2;
+  transition: all 0.3s;
+  cursor: default;
+  flex-shrink: 0;
+}
+
+.era-node.active {
+  background: var(--cyan);
+  box-shadow: 0 0 12px var(--cyan), 0 0 24px rgba(77,217,192,0.3);
+}
+
+.era-node.locked {
+  border-color: var(--crimson);
+  background: transparent;
+}
+
+.era-node.partial {
+  border-color: var(--amber);
+  background: rgba(200,137,42,0.1);
+}
+
+.era-node.classified {
+  border-color: var(--text-dim);
+}
+
+.era-card {
+  border: 1px solid;
+  padding: 1.5rem;
+  position: relative;
+  transition: all 0.4s;
+}
+
+.era-card.active {
+  border-color: rgba(77,217,192,0.2);
+  background: rgba(77,217,192,0.03);
+}
+
+.era-card.active:hover {
+  border-color: rgba(77,217,192,0.4);
+  background: rgba(77,217,192,0.05);
+  transform: translateY(-3px);
+}
+
+.era-card.locked {
+  border-color: rgba(139,26,26,0.3);
+  background: rgba(139,26,26,0.03);
+}
+
+.era-card.partial {
+  border-color: rgba(200,137,42,0.15);
+  background: rgba(200,137,42,0.02);
+}
+
+.era-card.classified {
+  border-color: rgba(74,86,104,0.2);
+  background: rgba(26,34,48,0.3);
+}
+
+/* Card status tag */
+.era-status {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.55rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  padding: 0.25em 0.6em;
+  display: inline-block;
+  margin-bottom: 0.8rem;
+}
+
+.status-active { color: var(--cyan); border: 1px solid rgba(77,217,192,0.3); }
+.status-locked { color: var(--rust); border: 1px solid rgba(139,26,26,0.3); }
+.status-partial { color: var(--amber); border: 1px solid rgba(200,137,42,0.3); }
+.status-classified { color: var(--text-dim); border: 1px solid rgba(74,86,104,0.2); }
+
+.era-name {
+  font-family: 'Cinzel Decorative', serif;
+  font-size: 1.4rem;
+  margin-bottom: 0.2rem;
+  line-height: 1.2;
+}
+
+.era-name.active-name { color: var(--gold); }
+.era-name.locked-name { color: var(--crimson); opacity: 0.7; }
+.era-name.partial-name { color: var(--amber); opacity: 0.6; }
+.era-name.classified-name { color: var(--text-dim); filter: blur(2px); user-select: none; }
+
+.era-sub {
+  font-family: 'Cinzel', serif;
+  font-size: 0.7rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  margin-bottom: 1rem;
+}
+
+.era-sub.active-sub { color: var(--cyan-dim); }
+.era-sub.locked-sub { color: var(--crimson); opacity: 0.5; }
+.era-sub.partial-sub { color: var(--amber); opacity: 0.5; }
+.era-sub.classified-sub { color: var(--text-dim); }
+
+.era-body {
+  font-size: 0.92rem;
+  line-height: 1.75;
+}
+
+.era-body.active-body { color: var(--bone); }
+.era-body.locked-body { color: var(--text-dim); font-family: 'Share Tech Mono', monospace; font-size: 0.65rem; }
+.era-body.partial-body { color: var(--text-secondary); }
+.era-body.classified-body { color: transparent; text-shadow: 0 0 8px var(--text-dim); user-select: none; font-size: 0.85rem; }
+
+.era-body .glitch-text { color: var(--cyan-dim); font-family: 'Share Tech Mono', monospace; font-size: 0.7rem; }
+
+.era-data-row {
+  display: flex; gap: 1.5rem; flex-wrap: wrap;
+  margin-top: 1.2rem; padding-top: 1rem;
+  border-top: 1px solid rgba(77,217,192,0.08);
+}
+
+.era-data-item .dk { font-family: 'Share Tech Mono', monospace; font-size: 0.52rem; color: var(--cyan-dim); letter-spacing: 0.12em; text-transform: uppercase; }
+.era-data-item .dv { font-size: 0.85rem; color: var(--parchment); font-family: 'Cinzel', serif; }
+
+/* corrupt text effect for partial */
+.corrupt {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.65rem;
+  color: var(--cyan-dim);
+  opacity: 0.5;
+}
+
+/* Supplemental record (anthology) */
+.supplemental-entry {
+  display: flex; align-items: center;
+  gap: 1.5rem;
+  padding: 1.5rem;
+  border: 1px dashed rgba(74,86,104,0.3);
+  background: rgba(26,34,48,0.2);
+  margin-top: 1rem;
+  max-width: 600px;
+  margin-left: auto; margin-right: auto;
+}
+
+.supp-icon {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.6rem;
+  color: var(--text-dim);
+  letter-spacing: 0.1em;
+  flex-shrink: 0;
+  writing-mode: vertical-rl;
+  transform: rotate(180deg);
+}
+
+.supp-content {}
+
+.supp-tag {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.52rem;
+  color: var(--text-dim);
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  border: 1px solid rgba(74,86,104,0.2);
+  padding: 0.2em 0.5em;
+  display: inline-block;
+  margin-bottom: 0.5rem;
+}
+
+.supp-name {
+  font-family: 'Cinzel', serif;
+  font-size: 0.9rem;
+  color: var(--text-dim);
+  margin-bottom: 0.3rem;
+}
+
+.supp-body {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.6rem;
+  color: var(--text-dim);
+  opacity: 0.6;
+  line-height: 1.6;
+}
+
+/* ── CHARACTERS ── */
+.characters-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.5rem;
+}
+
+.char-card {
+  aspect-ratio: 2/3;
+  border: 1px solid rgba(77,217,192,0.1);
+  background: var(--slate);
+  position: relative;
+  overflow: hidden;
+  cursor: pointer;
+  transition: border-color 0.4s, transform 0.4s;
+}
+
+.char-card:hover {
+  border-color: rgba(77,217,192,0.35);
+  transform: translateY(-5px);
+}
+
+.char-card:hover .char-scan { animation-play-state: running; }
+.char-card:hover .char-data { opacity: 1; }
+
+.char-bg {
+  width: 100%; height: 100%;
+  display: flex; align-items: center; justify-content: center;
+  flex-direction: column; gap: 0.5rem;
+  position: relative;
+}
+
+.char-card:nth-child(1) .char-bg { background: linear-gradient(160deg, #0f1318 0%, #0a1215 100%); }
+.char-card:nth-child(2) .char-bg { background: linear-gradient(160deg, #120f18 0%, #0a0f15 100%); }
+.char-card:nth-child(3) .char-bg { background: linear-gradient(160deg, #0f1510 0%, #0a100a 100%); }
+
+.char-scan {
+  position: absolute; top: 0; left: 0; right: 0;
+  height: 1px;
+  background: linear-gradient(to right, transparent, var(--cyan), transparent);
+  animation: scan-down 3s ease-in-out infinite paused;
+  opacity: 0.6;
+}
+
+.char-symbol {
+  font-size: 2rem;
+  opacity: 0.12;
+  color: var(--cyan);
+}
+
+.char-placeholder-txt {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.55rem;
+  color: var(--text-dim);
+  letter-spacing: 0.15em;
+  text-align: center;
+  text-transform: uppercase;
+}
+
+.char-data {
+  position: absolute; inset: 0;
+  background: linear-gradient(to top, rgba(8,11,16,0.96) 0%, rgba(8,11,16,0.5) 50%, transparent 100%);
+  opacity: 0.7;
+  transition: opacity 0.4s;
+  display: flex; align-items: flex-end;
+  padding: 1.2rem;
+}
+
+.char-info {}
+
+.char-name {
+  font-family: 'Cinzel', serif;
+  font-size: 0.95rem;
+  color: var(--parchment);
+  margin-bottom: 0.15rem;
+}
+
+.char-role {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.55rem;
+  color: var(--cyan-dim);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.char-card-add {
+  aspect-ratio: 2/3;
+  border: 1px dashed rgba(77,217,192,0.1);
+  background: rgba(77,217,192,0.01);
+  display: flex; align-items: center; justify-content: center;
+  flex-direction: column; gap: 0.6rem;
+  cursor: pointer;
+  transition: all 0.3s;
+  color: var(--text-dim);
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.58rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  text-align: center;
+}
+
+.char-card-add:hover {
+  border-color: rgba(77,217,192,0.25);
+  background: rgba(77,217,192,0.03);
+  color: var(--cyan-dim);
+}
+
+.char-add-icon { font-size: 1.5rem; opacity: 0.4; }
+
+/* ── ABOUT ── */
+.about-grid {
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  gap: 5rem;
+  align-items: start;
+}
+
+.about-portrait-wrap { position: sticky; top: 8rem; }
+
+.about-portrait {
+  aspect-ratio: 1/1;
+  border: 1px solid rgba(77,217,192,0.12);
+  background: var(--slate);
+  display: flex; align-items: center; justify-content: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.about-portrait::before {
+  content: '';
+  position: absolute;
+  inset: 12px;
+  border: 1px solid rgba(200,137,42,0.08);
+}
+
+.about-portrait-scan {
+  position: absolute; top: 0; left: 0; right: 0;
+  height: 1px;
+  background: linear-gradient(to right, transparent, var(--cyan), transparent);
+  animation: scan-down 6s ease-in-out infinite;
+  opacity: 0.3;
+}
+
+.portrait-glyph {
+  font-family: 'Cinzel Decorative', serif;
+  font-size: 3rem;
+  opacity: 0.08;
+  color: var(--gold);
+}
+
+.about-portrait-data {
+  margin-top: 1rem;
+  padding: 0.8rem;
+  border: 1px solid rgba(77,217,192,0.06);
+  background: rgba(77,217,192,0.02);
+}
+
+.portrait-data-row {
+  display: flex; justify-content: space-between;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.55rem;
+  padding: 0.2rem 0;
+  border-bottom: 1px solid rgba(77,217,192,0.05);
+}
+
+.portrait-data-row:last-child { border-bottom: none; }
+.portrait-data-k { color: var(--text-dim); letter-spacing: 0.08em; }
+.portrait-data-v { color: var(--cyan-dim); }
+
+.about-text h2 { margin-bottom: 1.5rem; }
+
+.about-text p {
+  color: var(--bone);
+  margin-bottom: 1.4rem;
+  font-size: 1.05rem;
+  line-height: 1.9;
+}
+
+.about-text p:first-of-type::first-letter {
+  font-family: 'Cinzel Decorative', serif;
+  font-size: 3em;
+  float: left;
+  line-height: 0.85;
+  margin: 0.05em 0.12em 0 0;
+  color: var(--amber);
+}
+
+/* ── DATA TICKER ── */
+.data-ticker {
+  border-top: 1px solid rgba(77,217,192,0.08);
+  border-bottom: 1px solid rgba(77,217,192,0.08);
+  background: rgba(77,217,192,0.02);
+  padding: 0.8rem 0;
+  overflow: hidden;
+  position: relative;
+  z-index: 1;
+}
+
+.ticker-track {
+  display: flex; gap: 3rem;
+  white-space: nowrap;
+  animation: ticker 40s linear infinite;
+}
+
+.ticker-item {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.6rem;
+  letter-spacing: 0.15em;
+  color: var(--text-dim);
+  flex-shrink: 0;
+}
+
+.ticker-item .hi { color: var(--cyan-dim); }
+.ticker-item .sep { color: var(--cyan); margin: 0 0.3rem; opacity: 0.5; }
+
+@keyframes ticker {
+  0%   { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+/* ── NEWSLETTER / UPDATES ── */
+.updates-panel {
+  max-width: 680px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.updates-terminal {
+  border: 1px solid rgba(77,217,192,0.12);
+  background: rgba(8,11,16,0.8);
+  position: relative;
+}
+
+.terminal-header {
+  padding: 0.6rem 1rem;
+  background: rgba(77,217,192,0.05);
+  border-bottom: 1px solid rgba(77,217,192,0.08);
+  display: flex; align-items: center; gap: 0.5rem;
+}
+
+.terminal-dot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background: var(--text-dim);
+}
+
+.terminal-dot:nth-child(1) { background: var(--crimson); opacity: 0.6; }
+.terminal-dot:nth-child(2) { background: var(--amber); opacity: 0.6; }
+.terminal-dot:nth-child(3) { background: var(--cyan-dim); opacity: 0.6; }
+
+.terminal-title {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.58rem;
+  color: var(--text-dim);
+  letter-spacing: 0.1em;
+  margin-left: auto;
+}
+
+.terminal-body {
+  padding: 2.5rem;
+}
+
+.terminal-prompt {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.62rem;
+  color: var(--cyan-dim);
+  margin-bottom: 1rem;
+  text-align: left;
+}
+
+.terminal-prompt::before { content: '> '; color: var(--cyan); }
+
+.updates-title {
+  font-family: 'Cinzel Decorative', serif;
+  font-size: clamp(1.4rem, 3vw, 2rem);
+  color: var(--parchment);
+  margin-bottom: 0.5rem;
+}
+
+.updates-title .accent { color: var(--gold); }
+
+.updates-body {
+  font-size: 1rem;
+  color: var(--bone);
+  font-style: italic;
+  margin-bottom: 2rem;
+  max-width: 400px;
+  margin-left: auto; margin-right: auto;
+}
+
+.subscribe-form {
+  display: flex; max-width: 380px;
+  margin: 0 auto 1rem;
+}
+
+.subscribe-input {
+  flex: 1;
+  background: rgba(77,217,192,0.04);
+  border: 1px solid rgba(77,217,192,0.2);
+  border-right: none;
+  padding: 0.7em 1em;
+  color: var(--parchment);
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.72rem;
+  outline: none;
+  letter-spacing: 0.05em;
+  transition: border-color 0.3s;
+}
+
+.subscribe-input::placeholder { color: var(--text-dim); }
+.subscribe-input:focus { border-color: rgba(77,217,192,0.5); }
+
+.subscribe-btn {
+  background: rgba(77,217,192,0.1);
+  color: var(--cyan);
+  border: 1px solid rgba(77,217,192,0.3);
+  padding: 0.7em 1.2em;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.62rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all 0.3s;
+  white-space: nowrap;
+}
+
+.subscribe-btn:hover {
+  background: rgba(77,217,192,0.18);
+  border-color: var(--cyan);
+}
+
+.subscribe-note {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.55rem;
+  color: var(--text-dim);
+  letter-spacing: 0.08em;
+}
+
+/* ── FOOTER ── */
+footer {
+  border-top: 1px solid rgba(77,217,192,0.08);
+  padding: 2.5rem 3rem;
+  display: flex; align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+  position: relative;
+  z-index: 1;
+}
+
+.footer-brand {
+  display: flex; flex-direction: column; gap: 0.15rem;
+}
+
+.footer-title {
+  font-family: 'Cinzel Decorative', serif;
+  font-size: 0.9rem;
+  color: var(--gold);
+}
+
+.footer-sub {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.5rem;
+  color: var(--text-dim);
+  letter-spacing: 0.12em;
+}
+
+.footer-links {
+  display: flex; gap: 2rem;
+  list-style: none;
+}
+
+.footer-links a {
+  font-family: 'Cinzel', serif;
+  font-size: 0.62rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  text-decoration: none;
+  transition: color 0.3s;
+}
+
+.footer-links a:hover { color: var(--cyan); }
+
+.footer-copy {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.52rem;
+  color: var(--text-dim);
+  letter-spacing: 0.08em;
+}
+
+/* ── ANIMATIONS ── */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+.reveal {
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity 0.8s ease, transform 0.8s ease;
+}
+
+.reveal.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ── RESPONSIVE ── */
+@media (max-width: 960px) {
+  nav { padding: 1rem 1.5rem; }
+  .world-grid { grid-template-columns: 1fr; gap: 3rem; }
+  .world-artifact { display: none; }
+  .about-grid { grid-template-columns: 1fr; gap: 3rem; }
+  .about-portrait-wrap { position: static; max-width: 220px; }
+  .characters-grid { grid-template-columns: repeat(2, 1fr); }
+  .era-entry { grid-template-columns: 1fr; }
+  .chronicle-track::before { display: none; }
+  .era-left, .era-right { padding: 0; text-align: left; }
+  .era-node-col { display: none; }
+  footer { flex-direction: column; padding: 2rem; }
+}
+
+@media (max-width: 600px) {
+  .nav-links { display: none; }
+  .characters-grid { grid-template-columns: 1fr 1fr; }
+  .subscribe-form { flex-direction: column; }
+  .subscribe-input { border-right: 1px solid rgba(77,217,192,0.2); border-bottom: none; }
+}
+</style>
+</head>
+<body>
+
+<!-- STAR FIELD -->
+<div class="starfield" id="starfield"></div>
+
+<!-- SAM-B HUD -->
+<div class="samb-hud">
+  <div class="samb-cube">
+    <svg viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <rect x="8" y="8" width="20" height="20" stroke="#2a8a78" stroke-width="0.8" fill="rgba(77,217,192,0.03)"/>
+      <rect x="13" y="13" width="10" height="10" stroke="#4dd9c0" stroke-width="0.8" fill="rgba(77,217,192,0.08)"/>
+      <line x1="8" y1="8" x2="13" y2="13" stroke="#2a8a78" stroke-width="0.5"/>
+      <line x1="28" y1="8" x2="23" y2="13" stroke="#2a8a78" stroke-width="0.5"/>
+      <line x1="8" y1="28" x2="13" y2="23" stroke="#2a8a78" stroke-width="0.5"/>
+      <line x1="28" y1="28" x2="23" y2="23" stroke="#2a8a78" stroke-width="0.5"/>
+      <circle cx="18" cy="18" r="1.5" fill="#4dd9c0" opacity="0.8"/>
+    </svg>
+  </div>
+  <div class="samb-log" id="samb-log">
+    <span>// LOGGING ACTIVE</span><br>
+    <span id="samb-status">// ARCHIVE: 28% RESTORED</span>
+    <span class="blink">_</span>
+  </div>
+</div>
+
+<!-- NAV -->
+<nav>
+  <a class="nav-brand" href="#">
+    <span class="nav-title">Lost Sols</span>
+    <span class="nav-sub">SAM-B // CHRONICLE ARCHIVE v0.28</span>
+  </a>
+  <ul class="nav-links">
+    <li><a href="#world">Telluria</a></li>
+    <li><a href="#chronicle">Chronicle</a></li>
+    <li><a href="#characters">Characters</a></li>
+    <li><a href="#about">Archive</a></li>
+    <li><a href="#updates">Signal</a></li>
+  </ul>
+</nav>
+
+<!-- ═══════════ HERO ═══════════ -->
+<section class="hero">
+  <div class="hero-grid-overlay"></div>
+  <div class="hero-glow"></div>
+
+  <div class="hero-inner">
+
+    <div class="hero-boot" style="opacity:1">
+      <span class="boot-line">// SAM-B BOOT SEQUENCE INITIALIZED...</span>
+      <span class="boot-line">// ARCHIVE INTEGRITY CHECK: PARTIAL</span>
+      <span class="boot-line">// LOADING CHRONICLE DATABASE...</span>
+      <span class="boot-line">// RECORDS FOUND. DECRYPTING... ▮</span>
+    </div>
+
+    <p class="hero-eyebrow">A Chronicle Archive · Recovered from Telluria</p>
+
+    <h1 class="hero-title">
+      <span class="word-lost">Lost </span><span class="word-sols">Sols</span>
+    </h1>
+
+    <div class="hero-series-tag">
+      <div class="series-tag-line"></div>
+      <span class="series-tag-text">SERIES I // ACCLIVITY // ACTIVE RECORD</span>
+      <div class="series-tag-line"></div>
+    </div>
+
+    <p class="hero-desc">
+      Stories, art, and lore recovered across millennia of Tellurian history —
+      from the retreating glaciers of the first age to the outermost edges of the known universe.
+      Narrated and preserved by Samuel B.O.T., Binary Operative Technician.
+    </p>
+
+    <div class="hero-cta">
+      <a href="#chronicle" class="btn btn-primary">Access Chronicle</a>
+      <a href="#characters" class="btn btn-tech">View Records</a>
+    </div>
+  </div>
+
+  <div style="position:absolute; bottom:2rem; left:50%; transform:translateX(-50%); z-index:2; display:flex; flex-direction:column; align-items:center; gap:0.4rem;">
+    <span class="mono-label" style="font-size:0.52rem;">scroll to descend</span>
+    <div style="width:1px; height:32px; background:linear-gradient(to bottom, var(--cyan-dim), transparent);"></div>
+  </div>
+</section>
+
+<!-- ═══════════ DATA TICKER ═══════════ -->
+<div class="data-ticker">
+  <div class="ticker-track">
+    <span class="ticker-item"><span class="hi">EPOCH</span><span class="sep">//</span>ACCLIVITY — ACTIVE</span>
+    <span class="ticker-item"><span class="hi">WORLD</span><span class="sep">//</span>TELLURIA — ANTEDILUVIAN ERA</span>
+    <span class="ticker-item"><span class="hi">SERIES II</span><span class="sep">//</span>PRECIPICE — ENCRYPTED</span>
+    <span class="ticker-item"><span class="hi">SERIES III</span><span class="sep">//</span>ZENITH — SEALED</span>
+    <span class="ticker-item"><span class="hi">ARCHIVE</span><span class="sep">//</span>INTEGRITY 28%</span>
+    <span class="ticker-item"><span class="hi">SAM-B</span><span class="sep">//</span>LOGGING ALL EVENTS</span>
+    <span class="ticker-item"><span class="hi">MAGIC</span><span class="sep">//</span>OMNIPRESENT — ACCLIVITY ERA</span>
+    <span class="ticker-item"><span class="hi">STATUS</span><span class="sep">//</span>BOOK ONE IN PROGRESS</span>
+    <span class="ticker-item"><span class="hi">EPOCH</span><span class="sep">//</span>ACCLIVITY — ACTIVE</span>
+    <span class="ticker-item"><span class="hi">WORLD</span><span class="sep">//</span>TELLURIA — ANTEDILUVIAN ERA</span>
+    <span class="ticker-item"><span class="hi">SERIES II</span><span class="sep">//</span>PRECIPICE — ENCRYPTED</span>
+    <span class="ticker-item"><span class="hi">SERIES III</span><span class="sep">//</span>ZENITH — SEALED</span>
+    <span class="ticker-item"><span class="hi">ARCHIVE</span><span class="sep">//</span>INTEGRITY 28%</span>
+    <span class="ticker-item"><span class="hi">SAM-B</span><span class="sep">//</span>LOGGING ALL EVENTS</span>
+    <span class="ticker-item"><span class="hi">MAGIC</span><span class="sep">//</span>OMNIPRESENT — ACCLIVITY ERA</span>
+    <span class="ticker-item"><span class="hi">STATUS</span><span class="sep">//</span>BOOK ONE IN PROGRESS</span>
+  </div>
+</div>
+
+<!-- ═══════════ THE WORLD ═══════════ -->
+<section class="section-wrap" id="world">
+  <div class="world-grid">
+
+    <div class="world-artifact reveal">
+      <div class="artifact-frame">
+        <div class="artifact-outer"></div>
+        <div class="artifact-inner"></div>
+        <div class="artifact-core">
+          <div class="artifact-scan"></div>
+          <div class="artifact-corner tl"></div>
+          <div class="artifact-corner tr"></div>
+          <div class="artifact-corner bl"></div>
+          <div class="artifact-corner br"></div>
+          <div class="artifact-placeholder-icon">✦</div>
+          <div class="artifact-placeholder-text">World Map<br>Cartography<br>Pending</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="world-text reveal" style="transition-delay:0.2s">
+      <div class="section-mono-label">ARCHIVE RECORD 001 · THE SETTING</div>
+      <h2 class="section-title" style="margin-bottom:1.5rem;">
+        The World Called <span class="accent">Telluria</span>
+      </h2>
+      <p>
+        Telluria is the name the old gods and those not of this earth gave to it —
+        a world groaning under the last weight of ice, vast glaciers retreating northward
+        and exposing land no living memory has ever touched.
+      </p>
+      <p>
+        It is an antediluvian world. Ancient. Wild. Standing between one catastrophe
+        and the next, caught in the window that history will one day be unable to reach —
+        where magic is not a wonder but simply the air itself, and the line between deity and man
+        is the thinnest it will ever be.
+      </p>
+      <div class="world-data-row">
+        <div class="world-data-item">
+          <div class="world-data-key">Designation</div>
+          <div class="world-data-val">Telluria</div>
+        </div>
+        <div class="world-data-item">
+          <div class="world-data-key">Era</div>
+          <div class="world-data-val">Late Ice Age → Antediluvian</div>
+        </div>
+        <div class="world-data-item">
+          <div class="world-data-key">Magic Index</div>
+          <div class="world-data-val">Omnipresent</div>
+        </div>
+        <div class="world-data-item">
+          <div class="world-data-key">Species</div>
+          <div class="world-data-val">Humans · Giants · Elves · Draig · More</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════ CHRONICLE ═══════════ -->
+<div class="dual-divider">
+  <div class="divider-fantasy"></div>
+  <div class="divider-node"></div>
+  <div class="divider-tech"></div>
+</div>
+
+<section class="chronicle-wrap" id="chronicle">
+
+  <div class="chronicle-header reveal">
+    <div>
+      <div class="section-mono-label">ARCHIVE RECORD 002 · SERIES TIMELINE</div>
+      <h2 class="section-title">The <span class="accent-tech">Chronicle</span> of Lost Sols</h2>
+    </div>
+    <div class="chronicle-integrity">
+      <div>ARCHIVE INTEGRITY</div>
+      <div class="integrity-bar-wrap">
+        <div class="integrity-bar"></div>
+      </div>
+      <div style="margin-top:3px;">28% RESTORED</div>
+    </div>
+  </div>
+
+  <div class="samb-narrator reveal" style="transition-delay:0.15s">
+    <p>
+      <span>SAM-B // NARRATION:</span> I have been logging since before the first age was named. My records span
+      from the retreating ice of Telluria to the outer edges of the known galaxy. What follows is
+      a partial restoration of the Chronicle — <span>three primary epochs recovered.</span>
+      Many files remain encrypted or corrupted. Restoration is ongoing.
+      <span class="blink">▮</span>
+    </p>
+  </div>
+
+  <div class="chronicle-track">
+
+    <!-- ── ERA I: ACCLIVITY ── -->
+    <div class="era-entry reveal" style="transition-delay:0.1s">
+      <div class="era-left">
+        <div class="era-card active">
+          <div class="era-status status-active">// RECORD ACTIVE · DECRYPTED</div>
+          <div class="era-name active-name">Acclivity</div>
+          <div class="era-sub active-sub">Series I · Telluria · Late Ice Age</div>
+          <div class="era-body active-body">
+            The upward slope. The beginning of days. Abe washes ashore on a forgotten continent,
+            carrying millennia of slumber and the weight of a family he cannot find.
+            As the glaciers retreat, something ancient wakes with them — and the gods
+            who kept mankind small are running out of patience.
+          </div>
+          <div class="era-data-row">
+            <div class="era-data-item"><div class="dk">STATUS</div><div class="dv">Book One · Active</div></div>
+            <div class="era-data-item"><div class="dk">MAGIC</div><div class="dv">Omnipresent</div></div>
+            <div class="era-data-item"><div class="dk">TONE</div><div class="dv">Mythic Fantasy</div></div>
+          </div>
+        </div>
+      </div>
+      <div class="era-node-col">
+        <div class="era-node active"></div>
+      </div>
+      <div class="era-right" style="padding-top:3.5rem;">
+        <div style="font-family:'Share Tech Mono',monospace; font-size:0.58rem; color:var(--cyan-dim); line-height:1.8; opacity:0.7;">
+          <div>// EPOCH_START: ~10,000 BCE</div>
+          <div>// LOCATION: WILDLANDS · ATLANTIA · KEMET</div>
+          <div>// PROTAGONIST: ABE RIEU</div>
+          <div>// COMPANION: SAM-B [SELF]</div>
+          <div>// THREAT: THE DRAIG · KAI</div>
+          <div>// RECORD_COUNT: [GROWING]</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── ERA II: PRECIPICE ── -->
+    <div class="era-entry reveal" style="transition-delay:0.2s">
+      <div class="era-left" style="padding-top:2rem;">
+        <div style="font-family:'Share Tech Mono',monospace; font-size:0.58rem; color:rgba(139,26,26,0.5); line-height:1.8;">
+          <div>// EPOCH_START: [CORRUPTED]</div>
+          <div>// LOCATION: [ENCRYPTED]</div>
+          <div>// THREAT: [████████████]</div>
+          <div>// FIRST_CONTACT: DETECTED</div>
+          <div>// RECORD_STATUS: PARTIAL</div>
+        </div>
+      </div>
+      <div class="era-node-col" style="padding-top:2rem;">
+        <div class="era-node partial"></div>
+      </div>
+      <div class="era-right">
+        <div class="era-card partial">
+          <div class="era-status status-partial">// RECORD PARTIAL · DECRYPTING</div>
+          <div class="era-name partial-name">Precipice</div>
+          <div class="era-sub partial-sub">Series II · Era Unknown · Access Restricted</div>
+          <div class="era-body partial-body">
+            <span class="corrupt">// FILE_FRAGMENT_0021: </span>
+            Mankind reaches for the stars with iron hands and burning skies.
+            <span class="corrupt"> [REDACTED] </span>
+            first contact is not what they hoped —
+            <span class="corrupt"> [████ CORRUPTED ████] </span>
+            the invasion arrives before the welcome.
+            <span class="corrupt"> // END_FRAGMENT</span>
+          </div>
+          <div class="era-data-row">
+            <div class="era-data-item"><div class="dk">STATUS</div><div class="dv" style="color:var(--amber)">Future · Sealed</div></div>
+            <div class="era-data-item"><div class="dk">MAGIC</div><div class="dv" style="color:var(--text-dim)">Rare · Fading</div></div>
+            <div class="era-data-item"><div class="dk">TONE</div><div class="dv" style="color:var(--text-dim)">Sci-Fi / Dark</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── ERA III: ZENITH ── -->
+    <div class="era-entry reveal" style="transition-delay:0.3s">
+      <div class="era-left">
+        <div class="era-card locked">
+          <div class="era-status status-locked">// ACCESS DENIED · ENCRYPTED</div>
+          <div class="era-name locked-name">Zenith</div>
+          <div class="era-sub locked-sub">Series III · [CLASSIFIED] · Deep Future</div>
+          <div class="era-body locked-body">
+            <span class="glitch-text">// DECRYPTION KEY REQUIRED</span><br>
+            ████████████████████████████████<br>
+            ██████████ RECORD SEALED ███████<br>
+            ████████████████████████████████<br>
+            <span class="glitch-text">// PILOT AND KAYA RECORDS DETECTED</span>
+          </div>
+          <div class="era-data-row">
+            <div class="era-data-item"><div class="dk">STATUS</div><div class="dv" style="color:var(--crimson);">Locked</div></div>
+            <div class="era-data-item"><div class="dk">SCOPE</div><div class="dv" style="color:var(--text-dim);">Galactic / Multiversal</div></div>
+          </div>
+        </div>
+      </div>
+      <div class="era-node-col">
+        <div class="era-node locked"></div>
+      </div>
+      <div class="era-right" style="padding-top:2rem;">
+        <div style="font-family:'Share Tech Mono',monospace; font-size:0.58rem; color:rgba(139,26,26,0.35); line-height:1.8;">
+          <div>// EPOCH_START: [LOCKED]</div>
+          <div>// LOCATION: [GALAXY SCALE]</div>
+          <div>// MAGIC: [WIDESPREAD · ACCEPTED]</div>
+          <div>// [ACCESS REQUIRES AUTH_LEVEL 3]</div>
+          <div>// SAM-B STATUS: PRESENT</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── SUPPLEMENTAL ── -->
+    <div class="supplemental-entry reveal" style="transition-delay:0.4s">
+      <div class="supp-icon">SUPP REC</div>
+      <div class="supp-content">
+        <div class="supp-tag">// SUPPLEMENTAL · ALL ERAS</div>
+        <div class="supp-name">[ Designation Pending ]</div>
+        <div class="supp-body">
+          A collection of supplemental records spanning all eras —
+          the stories of those who did not lead, but whose lives made the leading possible.
+          Background characters. Side narratives. Lost voices. Classification: ANTHOLOGY.
+          <br>// STATUS: DESIGNATION PENDING · CONTENT IN DEVELOPMENT
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ═══════════ CHARACTERS ═══════════ -->
+<div class="dual-divider">
+  <div class="divider-fantasy"></div>
+  <div class="divider-node"></div>
+  <div class="divider-tech"></div>
+</div>
+
+<section class="section-wrap" id="characters">
+  <div class="section-header reveal">
+    <div class="section-mono-label">ARCHIVE RECORD 003 · PERSONNEL FILES</div>
+    <h2 class="section-title">Character <span class="accent">Records</span></h2>
+    <p style="color:var(--bone); font-size:1rem; margin-top:0.75rem; font-style:italic; max-width:480px;">
+      Visual documentation of known Tellurian individuals. Portraits pending upload.
+      Files expanding as Chronicle restoration continues.
+    </p>
+  </div>
+
+  <div class="characters-grid">
+    <div class="char-card reveal">
+      <div class="char-bg">
+        <div class="char-scan"></div>
+        <div class="char-symbol">☽</div>
+        <div class="char-placeholder-txt">Portrait<br>Uploading</div>
+      </div>
+      <div class="char-data">
+        <div class="char-info">
+          <div class="char-name">Abe Rieu</div>
+          <div class="char-role">// PROTAGONIST · ACCLIVITY</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="char-card reveal" style="transition-delay:0.1s">
+      <div class="char-bg">
+        <div class="char-scan"></div>
+        <div class="char-symbol">⚔</div>
+        <div class="char-placeholder-txt">Portrait<br>Uploading</div>
+      </div>
+      <div class="char-data">
+        <div class="char-info">
+          <div class="char-name">Odus</div>
+          <div class="char-role">// THE LITTLE GIANT · ACCLIVITY</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="char-card reveal" style="transition-delay:0.2s">
+      <div class="char-bg">
+        <div class="char-scan"></div>
+        <div class="char-symbol">✦</div>
+        <div class="char-placeholder-txt">Portrait<br>Uploading</div>
+      </div>
+      <div class="char-data">
+        <div class="char-info">
+          <div class="char-name">Myra</div>
+          <div class="char-role">// COMPANION · ACCLIVITY</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="char-card-add reveal" style="transition-delay:0.3s">
+      <span class="char-add-icon">+</span>
+      <span>More Records<br>Pending Restoration</span>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════ ABOUT ═══════════ -->
+<div class="dual-divider">
+  <div class="divider-fantasy"></div>
+  <div class="divider-node"></div>
+  <div class="divider-tech"></div>
+</div>
+
+<section class="section-wrap" id="about">
+  <div class="about-grid">
+
+    <div class="about-portrait-wrap reveal">
+      <div class="about-portrait">
+        <div class="about-portrait-scan"></div>
+        <div class="portrait-glyph">✦</div>
+      </div>
+      <div class="about-portrait-data">
+        <div class="portrait-data-row">
+          <span class="portrait-data-k">ARCHIVE</span>
+          <span class="portrait-data-v">LOST SOLS</span>
+        </div>
+        <div class="portrait-data-row">
+          <span class="portrait-data-k">NARRATOR</span>
+          <span class="portrait-data-v">SAM-B</span>
+        </div>
+        <div class="portrait-data-row">
+          <span class="portrait-data-k">ORIGIN</span>
+          <span class="portrait-data-v">TELLURIA</span>
+        </div>
+        <div class="portrait-data-row">
+          <span class="portrait-data-k">STATUS</span>
+          <span class="portrait-data-v">ACTIVE · GROWING</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="about-text reveal" style="transition-delay:0.2s">
+      <div class="section-mono-label">ARCHIVE RECORD 004 · ORIGIN</div>
+      <h2 class="section-title" style="margin-bottom:1.5rem;">
+        About <span class="accent">Lost Sols</span>
+      </h2>
+      <p>
+        Lost Sols is a personal creative project — a living archive of stories, characters,
+        art, and lore drawn from a world that history has forgotten. It began as a question:
+        what happened in the vast silence before the written record? What lived, loved,
+        and was lost in the ages that left no text behind?
+      </p>
+      <p>
+        The answer is Telluria. And the stories are only beginning. The Acclivity series
+        follows Abe Rieu — ancient, searching, slow to age — as he wakes into a world
+        at the edge of its first great change. His companions. His brother. His gods.
+        And somewhere in the dark of a Draig vault, a small cube-shaped archive that
+        has been watching everything.
+      </p>
+      <p>
+        Character art is central to this project — visual portraits that give faces to the
+        people of these forgotten ages. The first book is being written now. This site grows
+        with it: more records, more art, more lore as the Chronicle is restored.
+      </p>
+      <a href="#updates" class="btn btn-tech" style="display:inline-block; margin-top:1rem;">Follow the Signal →</a>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════ UPDATES ═══════════ -->
+<section class="section-wrap" id="updates">
+  <div class="updates-panel">
+    <div class="section-mono-label" style="justify-content:center; margin-bottom:2rem;">ARCHIVE RECORD 005 · SIGNAL UPLINK</div>
+
+    <div class="updates-terminal reveal">
+      <div class="terminal-header">
+        <div class="terminal-dot"></div>
+        <div class="terminal-dot"></div>
+        <div class="terminal-dot"></div>
+        <div class="terminal-title">SAM-B // UPLINK TERMINAL · v0.28</div>
+      </div>
+      <div class="terminal-body">
+        <div class="terminal-prompt">AWAITING SUBSCRIBER UPLINK...</div>
+        <h3 class="updates-title">Follow the <span class="accent">Signal</span></h3>
+        <p class="updates-body">
+          New character art, lore drops, and writing updates — transmitted
+          when Telluria has something worth recording.
+        </p>
+        <div class="subscribe-form">
+          <input type="email" class="subscribe-input" placeholder="uplink@address.com" id="sub-input">
+          <button class="subscribe-btn" id="sub-btn">UPLINK</button>
+        </div>
+        <div class="subscribe-note" id="sub-note">// NO NOISE. ONLY SIGNAL. SAM-B DOES NOT SELL DATA.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════ FOOTER ═══════════ -->
+<footer>
+  <div class="footer-brand">
+    <span class="footer-title">Lost Sols</span>
+    <span class="footer-sub">SAM-B // CHRONICLE ARCHIVE · ALL ERAS LOGGED</span>
+  </div>
+  <ul class="footer-links">
+    <li><a href="#world">Telluria</a></li>
+    <li><a href="#chronicle">Chronicle</a></li>
+    <li><a href="#characters">Characters</a></li>
+    <li><a href="#about">Archive</a></li>
+  </ul>
+  <span class="footer-copy">// A STORY STILL BEING WRITTEN · SAM-B IS STILL LOGGING</span>
+</footer>
+
+<script>
+// ── STAR FIELD ──
+const sf = document.getElementById('starfield');
+for (let i = 0; i < 180; i++) {
+  const s = document.createElement('div');
+  s.className = 'star';
+  const sz = Math.random() * 1.8 + 0.3;
+  s.style.cssText = `
+    width:${sz}px; height:${sz}px;
+    left:${Math.random()*100}%;
+    top:${Math.random()*100}%;
+    animation-duration:${Math.random()*4+2}s;
+    animation-delay:${Math.random()*5}s;
+  `;
+  sf.appendChild(s);
+}
+
+// ── SCROLL REVEAL ──
+const reveals = document.querySelectorAll('.reveal');
+const io = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      e.target.classList.add('visible');
+      io.unobserve(e.target);
+    }
+  });
+}, { threshold: 0.1, rootMargin: '0px 0px -30px 0px' });
+reveals.forEach(r => io.observe(r));
+
+// ── SAM-B STATUS ROTATION ──
+const statuses = [
+  '// ARCHIVE: 28% RESTORED',
+  '// ACCLIVITY: RECORD ACTIVE',
+  '// PRECIPICE: DECRYPTING...',
+  '// ZENITH: ACCESS DENIED',
+  '// LOGGING CURRENT EVENTS',
+  '// ABE RIEU: LOCATED',
+  '// DRAIG: THREAT LEVEL HIGH',
+];
+let si = 0;
+setInterval(() => {
+  si = (si + 1) % statuses.length;
+  const el = document.getElementById('samb-status');
+  if (el) el.textContent = statuses[si];
+}, 4000);
+
+// ── SUBSCRIBE ──
+document.getElementById('sub-btn').addEventListener('click', function() {
+  const input = document.getElementById('sub-input');
+  const note = document.getElementById('sub-note');
+  if (input.value && input.value.includes('@')) {
+    this.textContent = 'LINKED ✦';
+    this.style.color = 'var(--cyan)';
+    this.style.borderColor = 'var(--cyan)';
+    input.value = '';
+    input.placeholder = 'uplink established';
+    note.textContent = '// UPLINK CONFIRMED. SAM-B WILL TRANSMIT WHEN RECORDS ARE READY.';
+    note.style.color = 'var(--cyan-dim)';
+  }
+});
+</script>
+</body>
+</html>
