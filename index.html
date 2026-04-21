@@ -1271,6 +1271,9 @@ footer {
   animation: blink 1.2s step-end infinite;
 }
 
+.typed-cursor.cursor-amber { background: #e8a030; }
+.typed-cursor.cursor-red   { background: #ff4444; }
+
 .typed-line { display: block; min-height: 1.4em; }
 .typed-block { display: block; }
 
@@ -1544,7 +1547,7 @@ footer {
 <div class="era-row">
   <div class="era-left">
     <div class="era-card active">
-      <div class="era-status active typed-block" data-text="// RECORD ACTIVE · DECRYPTING" data-cursor="true"></div>
+      <div class="era-status active typed-block" data-text="// RECORD ACTIVE · DECRYPTING" data-cursor="true" data-cursor-class="cursor-amber"></div>
       <div class="era-name active">Acclivity</div>
       <div class="era-sub active">Series I · Telluria · Late Ice Age</div>
       <div class="era-body active">
@@ -1588,7 +1591,7 @@ footer {
   <div class="era-node-col" style="padding-top:2rem;"><div class="era-node locked"></div></div>
   <div class="era-right">
     <div class="era-card locked">
-      <div class="era-status locked typed-block" data-text="// ACCESS DENIED · ENCRYPTED" data-cursor="true"></div>
+      <div class="era-status locked typed-block" data-text="// ACCESS DENIED · ENCRYPTED" data-cursor="true" data-cursor-class="cursor-red"></div>
       <div class="era-name locked">Precipice</div>
       <div class="era-sub locked">Series II · [Classified] · Future Era</div>
       <div class="era-body locked">
@@ -1610,7 +1613,7 @@ footer {
 <div class="era-row">
   <div class="era-left">
     <div class="era-card locked">
-      <div class="era-status locked typed-block" data-text="// ACCESS DENIED · ENCRYPTED" data-cursor="true"></div>
+      <div class="era-status locked typed-block" data-text="// ACCESS DENIED · ENCRYPTED" data-cursor="true" data-cursor-class="cursor-red"></div>
       <div class="era-name locked">Zenith</div>
       <div class="era-sub locked">Series III · [Classified] · Deep Future</div>
       <div class="era-body locked">
@@ -1888,35 +1891,32 @@ const sleep = ms => new Promise(r => setTimeout(r, ms));
 // TYPING ENGINE
 // ══════════════════════════════════════════
 
-const CHAR_SPEED  = 28;  // ms per character
-const LINE_PAUSE  = 180; // ms pause between lines
+const CHAR_SPEED  = 28;
+const LINE_PAUSE  = 180;
 const SCROLL_ROOT = { threshold: 0.25 };
 
-// Creates a blinking block cursor element
-function makeCursor() {
+// Boot complete flag — scroll blocks wait for this
+let bootComplete = false;
+
+// Create blinking block cursor
+function makeCursor(extraClass) {
   const c = document.createElement('span');
-  c.className = 'typed-cursor';
+  c.className = 'typed-cursor' + (extraClass ? ' ' + extraClass : '');
   return c;
 }
 
-// Types a single string into an element
-// highlights = array of strings to wrap in .typed-hi
-function typeText(el, text, highlights, showCursor) {
+// Type a string into an element character by character
+function typeText(el, text, highlights, showCursor, cursorClass) {
   return new Promise(resolve => {
     el.innerHTML = '';
-    const cursor = showCursor ? makeCursor() : null;
+    const cursor = showCursor ? makeCursor(cursorClass) : null;
     let i = 0;
 
     function tick() {
       if (i < text.length) {
-        // Build current text node
-        el.innerHTML = '';
-
-        // Check if any highlight phrase starts at current position
         const currentText = text.slice(0, i + 1);
         let html = currentText;
 
-        // Apply highlights to completed phrases
         if (highlights && highlights.length) {
           highlights.forEach(phrase => {
             if (currentText.includes(phrase)) {
@@ -1930,7 +1930,6 @@ function typeText(el, text, highlights, showCursor) {
         i++;
         setTimeout(tick, CHAR_SPEED);
       } else {
-        // Finished typing
         if (!showCursor && cursor && cursor.parentNode) {
           cursor.parentNode.removeChild(cursor);
         }
@@ -1941,63 +1940,81 @@ function typeText(el, text, highlights, showCursor) {
   });
 }
 
-// Types multiple lines sequentially
+// Type multiple lines sequentially
 async function typeLines(lines) {
   for (let i = 0; i < lines.length; i++) {
-    const el   = lines[i];
-    const text = el.dataset.text || '';
-    const isLast = i === lines.length - 1;
+    const el         = lines[i];
+    const text       = el.dataset.text || '';
+    const isLast     = i === lines.length - 1;
     const showCursor = isLast && el.dataset.cursor === 'true';
 
-    // Remove cursor from previous line if present
     const prevCursor = el.parentElement
       ? el.parentElement.querySelector('.typed-cursor')
       : null;
     if (prevCursor) prevCursor.remove();
 
-    await typeText(el, text, null, showCursor);
+    await typeText(el, text, null, showCursor, null);
     if (!isLast) await sleep(LINE_PAUSE);
   }
 }
 
-// Types a single block element (paragraph)
+// Type a single scroll-triggered block
 async function typeBlock(el) {
-  const text       = el.dataset.text || '';
-  const showCursor = el.dataset.cursor === 'true';
-  const highlights = el.dataset.highlight
+  const text        = el.dataset.text || '';
+  const showCursor  = el.dataset.cursor === 'true';
+  const cursorClass = el.dataset.cursorClass || null;
+  const highlights  = el.dataset.highlight
     ? el.dataset.highlight.split('|')
     : [];
-  await typeText(el, text, highlights, showCursor);
+  await typeText(el, text, highlights, showCursor, cursorClass);
 }
 
 // ── HERO BOOT SEQUENCE ──
-// Runs on page load automatically
 async function runBootSequence() {
   const lines = document.querySelectorAll('#hero-boot .typed-line');
   await sleep(300);
   await typeLines(Array.from(lines));
+  // Boot done — allow scroll blocks to type
+  bootComplete = true;
+  document.dispatchEvent(new Event('bootdone'));
 }
 
 // ── SCROLL-TRIGGERED TYPING ──
-// Watches .typed-block elements and types them when scrolled into view
+// Scroll blocks wait until boot sequence finishes
 function initScrollTyping() {
-  const blocks = document.querySelectorAll('.typed-block');
-  const typed  = new Set();
+  const blocks  = document.querySelectorAll('.typed-block');
+  const typed   = new Set();
+  const waiting = new Set();
 
   const observer = new IntersectionObserver((entries) => {
     entries.forEach(entry => {
       if (entry.isIntersecting && !typed.has(entry.target)) {
-        typed.add(entry.target);
-        typeBlock(entry.target);
-        observer.unobserve(entry.target);
+        if (bootComplete) {
+          typed.add(entry.target);
+          typeBlock(entry.target);
+          observer.unobserve(entry.target);
+        } else {
+          waiting.add(entry.target);
+        }
       }
     });
   }, SCROLL_ROOT);
 
   blocks.forEach(b => observer.observe(b));
+
+  // Fire waiting blocks when boot completes
+  document.addEventListener('bootdone', () => {
+    waiting.forEach(el => {
+      if (!typed.has(el)) {
+        typed.add(el);
+        typeBlock(el);
+      }
+    });
+    waiting.clear();
+  });
 }
 
-// Start everything once fonts + DOM ready
+// Start once fonts ready
 document.fonts.ready.then(() => {
   runBootSequence();
   initScrollTyping();
