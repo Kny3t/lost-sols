@@ -1260,6 +1260,23 @@ footer {
 .blink { animation: blink 1.2s step-end infinite; }
 @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
 
+/* ── TYPED CURSOR ── */
+.typed-cursor {
+  display: inline-block;
+  width: 0.55em;
+  height: 1.1em;
+  background: #00ffcc;
+  vertical-align: text-bottom;
+  margin-left: 2px;
+  animation: blink 1.2s step-end infinite;
+}
+
+.typed-line { display: block; min-height: 1.4em; }
+.typed-block { display: block; }
+
+/* Highlight spans inside typed content */
+.typed-hi { color: #00ffcc; }
+
 /* ── RESPONSIVE ── */
 @media (max-width: 900px) {
   .world-grid { grid-template-columns: 1fr; gap: 3rem; }
@@ -1371,11 +1388,11 @@ footer {
   <div class="hero-inner">
 
 ```
-<div class="hero-boot">
-  <span>// SAM-B BOOT SEQUENCE INITIALIZED...</span>
-  <span>// ARCHIVE INTEGRITY CHECK: PARTIAL</span>
-  <span>// LOADING CHRONICLE DATABASE...</span>
-  <span>// RECORDS FOUND. DECRYPTING... <span class="blink">▮</span></span>
+<div class="hero-boot" id="hero-boot">
+  <span class="typed-line" data-text="// SAM-B BOOT SEQUENCE INITIALIZED..."></span>
+  <span class="typed-line" data-text="// ARCHIVE INTEGRITY CHECK: PARTIAL"></span>
+  <span class="typed-line" data-text="// LOADING CHRONICLE DATABASE..."></span>
+  <span class="typed-line" data-text="// RECORDS FOUND. DECRYPTING..." data-cursor="true"></span>
 </div>
 
 <p class="hero-eyebrow">A Chronicle Archive · Recovered from Telluria</p>
@@ -1514,12 +1531,10 @@ footer {
   </div>
 
   <div class="samb-box">
-    <p>
-      <span>SAM-B // NARRATION:</span> I have been logging since before the first age was named.
-      My records span from the retreating ice of Telluria to the outer edges of the known galaxy.
-      What follows is a partial restoration — <span>three primary epochs recovered.</span>
-      Many files remain encrypted. Restoration is ongoing. <span class="blink">▮</span>
-    </p>
+    <p id="samb-narrator-text" class="typed-block"
+       data-text="SAM-B // NARRATION: I have been logging since before the first age was named. My records span from the retreating ice of Telluria to the outer edges of the known galaxy. What follows is a partial restoration — three primary epochs recovered. Many files remain encrypted. Restoration is ongoing."
+       data-cursor="true"
+       data-highlight="SAM-B // NARRATION:|three primary epochs recovered."></p>
   </div>
 
   <div class="chronicle-track">
@@ -1529,7 +1544,7 @@ footer {
 <div class="era-row">
   <div class="era-left">
     <div class="era-card active">
-      <div class="era-status active">// RECORD ACTIVE · DECRYPTING</div>
+      <div class="era-status active typed-block" data-text="// RECORD ACTIVE · DECRYPTING" data-cursor="true"></div>
       <div class="era-name active">Acclivity</div>
       <div class="era-sub active">Series I · Telluria · Late Ice Age</div>
       <div class="era-body active">
@@ -1573,7 +1588,7 @@ footer {
   <div class="era-node-col" style="padding-top:2rem;"><div class="era-node locked"></div></div>
   <div class="era-right">
     <div class="era-card locked">
-      <div class="era-status locked">// ACCESS DENIED · ENCRYPTED</div>
+      <div class="era-status locked typed-block" data-text="// ACCESS DENIED · ENCRYPTED" data-cursor="true"></div>
       <div class="era-name locked">Precipice</div>
       <div class="era-sub locked">Series II · [Classified] · Future Era</div>
       <div class="era-body locked">
@@ -1595,7 +1610,7 @@ footer {
 <div class="era-row">
   <div class="era-left">
     <div class="era-card locked">
-      <div class="era-status locked">// ACCESS DENIED · ENCRYPTED</div>
+      <div class="era-status locked typed-block" data-text="// ACCESS DENIED · ENCRYPTED" data-cursor="true"></div>
       <div class="era-name locked">Zenith</div>
       <div class="era-sub locked">Series III · [Classified] · Deep Future</div>
       <div class="era-body locked">
@@ -1862,6 +1877,130 @@ document.getElementById('sub-btn').addEventListener('click', function() {
     note.textContent = '// UPLINK CONFIRMED. SAM-B WILL TRANSMIT WHEN RECORDS ARE READY.';
     note.style.color = '#00a080';
   }
+});
+
+// ══════════════════════════════════════════
+// UTILITIES
+// ══════════════════════════════════════════
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+
+// ══════════════════════════════════════════
+// TYPING ENGINE
+// ══════════════════════════════════════════
+
+const CHAR_SPEED  = 28;  // ms per character
+const LINE_PAUSE  = 180; // ms pause between lines
+const SCROLL_ROOT = { threshold: 0.25 };
+
+// Creates a blinking block cursor element
+function makeCursor() {
+  const c = document.createElement('span');
+  c.className = 'typed-cursor';
+  return c;
+}
+
+// Types a single string into an element
+// highlights = array of strings to wrap in .typed-hi
+function typeText(el, text, highlights, showCursor) {
+  return new Promise(resolve => {
+    el.innerHTML = '';
+    const cursor = showCursor ? makeCursor() : null;
+    let i = 0;
+
+    function tick() {
+      if (i < text.length) {
+        // Build current text node
+        el.innerHTML = '';
+
+        // Check if any highlight phrase starts at current position
+        const currentText = text.slice(0, i + 1);
+        let html = currentText;
+
+        // Apply highlights to completed phrases
+        if (highlights && highlights.length) {
+          highlights.forEach(phrase => {
+            if (currentText.includes(phrase)) {
+              html = html.replace(phrase, `<span class="typed-hi">${phrase}</span>`);
+            }
+          });
+        }
+
+        el.innerHTML = html;
+        if (cursor) el.appendChild(cursor);
+        i++;
+        setTimeout(tick, CHAR_SPEED);
+      } else {
+        // Finished typing
+        if (!showCursor && cursor && cursor.parentNode) {
+          cursor.parentNode.removeChild(cursor);
+        }
+        resolve();
+      }
+    }
+    tick();
+  });
+}
+
+// Types multiple lines sequentially
+async function typeLines(lines) {
+  for (let i = 0; i < lines.length; i++) {
+    const el   = lines[i];
+    const text = el.dataset.text || '';
+    const isLast = i === lines.length - 1;
+    const showCursor = isLast && el.dataset.cursor === 'true';
+
+    // Remove cursor from previous line if present
+    const prevCursor = el.parentElement
+      ? el.parentElement.querySelector('.typed-cursor')
+      : null;
+    if (prevCursor) prevCursor.remove();
+
+    await typeText(el, text, null, showCursor);
+    if (!isLast) await sleep(LINE_PAUSE);
+  }
+}
+
+// Types a single block element (paragraph)
+async function typeBlock(el) {
+  const text       = el.dataset.text || '';
+  const showCursor = el.dataset.cursor === 'true';
+  const highlights = el.dataset.highlight
+    ? el.dataset.highlight.split('|')
+    : [];
+  await typeText(el, text, highlights, showCursor);
+}
+
+// ── HERO BOOT SEQUENCE ──
+// Runs on page load automatically
+async function runBootSequence() {
+  const lines = document.querySelectorAll('#hero-boot .typed-line');
+  await sleep(300);
+  await typeLines(Array.from(lines));
+}
+
+// ── SCROLL-TRIGGERED TYPING ──
+// Watches .typed-block elements and types them when scrolled into view
+function initScrollTyping() {
+  const blocks = document.querySelectorAll('.typed-block');
+  const typed  = new Set();
+
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting && !typed.has(entry.target)) {
+        typed.add(entry.target);
+        typeBlock(entry.target);
+        observer.unobserve(entry.target);
+      }
+    });
+  }, SCROLL_ROOT);
+
+  blocks.forEach(b => observer.observe(b));
+}
+
+// Start everything once fonts + DOM ready
+document.fonts.ready.then(() => {
+  runBootSequence();
+  initScrollTyping();
 });
 
 // NAV OVERLAY
