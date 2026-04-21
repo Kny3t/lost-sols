@@ -484,8 +484,8 @@ transform: rotate(45deg);
 flex-shrink: 0; position: relative; z-index: 2;
 }
 
-.era-node.active { background: #00ffcc; box-shadow: 0 0 14px #00ffcc, 0 0 28px rgba(0,255,204,0.3); }
-.era-node.partial { border-color: #e8a030; background: rgba(232,160,48,0.15); }
+.era-node.active { border-color: #e8a030; background: rgba(232,160,48,0.2); box-shadow: 0 0 14px #e8a030, 0 0 28px rgba(232,160,48,0.3); }
+.era-node.partial { border-color: #ff4444; background: transparent; }
 .era-node.locked { border-color: #ff4444; background: transparent; }
 
 /* Era cards */
@@ -496,13 +496,13 @@ position: relative;
 }
 
 .era-card.active {
-border-color: rgba(0,255,204,0.25);
-background: rgba(0,255,204,0.03);
+border-color: rgba(232,160,48,0.3);
+background: rgba(232,160,48,0.03);
 }
 
 .era-card.partial {
-border-color: rgba(232,160,48,0.2);
-background: rgba(232,160,48,0.025);
+border-color: rgba(255,68,68,0.35);
+background: rgba(255,68,68,0.04);
 }
 
 .era-card.locked {
@@ -521,8 +521,8 @@ margin-bottom: 0.8rem;
 border: 1px solid;
 }
 
-.era-status.active { color: #00ffcc; border-color: rgba(0,255,204,0.35); }
-.era-status.partial { color: #e8a030; border-color: rgba(232,160,48,0.35); }
+.era-status.active { color: #e8a030; border-color: rgba(232,160,48,0.4); }
+.era-status.partial { color: #ff4444; border-color: rgba(255,68,68,0.4); }
 .era-status.locked { color: #ff4444; border-color: rgba(255,68,68,0.4); }
 
 .era-name {
@@ -533,7 +533,7 @@ margin-bottom: 0.2rem;
 }
 
 .era-name.active { color: #ffd060; }
-.era-name.partial { color: #e8a030; }
+.era-name.partial { color: #ff4444; }
 .era-name.locked { color: #ff4444; }
 
 .era-sub {
@@ -544,8 +544,8 @@ text-transform: uppercase;
 margin-bottom: 1rem;
 }
 
-.era-sub.active { color: #00a080; }
-.era-sub.partial { color: #b07030; }
+.era-sub.active { color: #b07030; }
+.era-sub.partial { color: #cc3333; }
 .era-sub.locked { color: #cc3333; }
 
 .era-body {
@@ -555,7 +555,7 @@ margin-bottom: 1.2rem;
 }
 
 .era-body.active { color: #c8c0a8; }
-.era-body.partial { color: #908880; font-family: ‘Share Tech Mono’, monospace; font-size: 0.78rem; }
+.era-body.partial { color: #cc3333; font-family: ‘Share Tech Mono’, monospace; font-size: 0.78rem; line-height: 1.9; }
 .era-body.locked { color: #cc3333; font-family: ‘Share Tech Mono’, monospace; font-size: 0.78rem; line-height: 1.9; }
 
 .era-body .corrupt { color: #00a080; font-size: 0.72rem; }
@@ -1004,7 +1004,7 @@ footer { flex-direction: column; padding: 2rem; text-align: center; }
 <nav>
   <a class="nav-brand" href="#">
     <span class="nav-title">Lost Sols</span>
-    <span class="nav-sub">SAM-B // CHRONICLE ARCHIVE v0.28</span>
+    <span class="nav-sub">SAM-B // CHRONICLE ARCHIVE v0.25</span>
   </a>
   <ul class="nav-links">
     <li><a href="#world">Telluria</a></li>
@@ -1065,19 +1065,19 @@ footer { flex-direction: column; padding: 2rem; text-align: center; }
 
 <div class="ticker">
   <div class="ticker-track">
-    <span class="ticker-item"><span class="hi">EPOCH</span><span class="sep">//</span>ACCLIVITY — ACTIVE</span>
+    <span class="ticker-item"><span class="hi">EPOCH</span><span class="sep">//</span>ACCLIVITY — DECRYPTING</span>
     <span class="ticker-item"><span class="hi">WORLD</span><span class="sep">//</span>TELLURIA — ANTEDILUVIAN ERA</span>
-    <span class="ticker-item"><span class="hi">SERIES II</span><span class="sep">//</span>PRECIPICE — ENCRYPTED</span>
-    <span class="ticker-item"><span class="hi">SERIES III</span><span class="sep">//</span>ZENITH — SEALED</span>
-    <span class="ticker-item"><span class="hi">ARCHIVE</span><span class="sep">//</span>INTEGRITY 28%</span>
+    <span class="ticker-item"><span class="hi">SERIES II</span><span class="sep">//</span>PRECIPICE — ACCESS DENIED</span>
+    <span class="ticker-item"><span class="hi">SERIES III</span><span class="sep">//</span>ZENITH — ACCESS DENIED</span>
+    <span class="ticker-item"><span class="hi">ARCHIVE</span><span class="sep">//</span>INTEGRITY 25%</span>
     <span class="ticker-item"><span class="hi">SAM-B</span><span class="sep">//</span>LOGGING ALL EVENTS</span>
     <span class="ticker-item"><span class="hi">MAGIC</span><span class="sep">//</span>OMNIPRESENT — ACCLIVITY ERA</span>
     <span class="ticker-item"><span class="hi">STATUS</span><span class="sep">//</span>BOOK ONE IN PROGRESS</span>
-    <span class="ticker-item"><span class="hi">EPOCH</span><span class="sep">//</span>ACCLIVITY — ACTIVE</span>
+    <span class="ticker-item"><span class="hi">EPOCH</span><span class="sep">//</span>ACCLIVITY — DECRYPTING</span>
     <span class="ticker-item"><span class="hi">WORLD</span><span class="sep">//</span>TELLURIA — ANTEDILUVIAN ERA</span>
-    <span class="ticker-item"><span class="hi">SERIES II</span><span class="sep">//</span>PRECIPICE — ENCRYPTED</span>
-    <span class="ticker-item"><span class="hi">SERIES III</span><span class="sep">//</span>ZENITH — SEALED</span>
-    <span class="ticker-item"><span class="hi">ARCHIVE</span><span class="sep">//</span>INTEGRITY 28%</span>
+    <span class="ticker-item"><span class="hi">SERIES II</span><span class="sep">//</span>PRECIPICE — ACCESS DENIED</span>
+    <span class="ticker-item"><span class="hi">SERIES III</span><span class="sep">//</span>ZENITH — ACCESS DENIED</span>
+    <span class="ticker-item"><span class="hi">ARCHIVE</span><span class="sep">//</span>INTEGRITY 25%</span>
     <span class="ticker-item"><span class="hi">SAM-B</span><span class="sep">//</span>LOGGING ALL EVENTS</span>
     <span class="ticker-item"><span class="hi">MAGIC</span><span class="sep">//</span>OMNIPRESENT — ACCLIVITY ERA</span>
     <span class="ticker-item"><span class="hi">STATUS</span><span class="sep">//</span>BOOK ONE IN PROGRESS</span>
@@ -1159,8 +1159,8 @@ footer { flex-direction: column; padding: 2rem; text-align: center; }
     </div>
     <div class="integrity-wrap">
       <div class="integrity-label">ARCHIVE INTEGRITY</div>
-      <div class="integrity-bar"><div class="integrity-fill"></div></div>
-      <div class="integrity-label" style="margin-top:4px;">28% RESTORED</div>
+      <div class="integrity-bar"><div class="integrity-fill" style="width:25%;"></div></div>
+      <div class="integrity-label" style="margin-top:4px;">25% RESTORED</div>
     </div>
   </div>
 
@@ -1180,7 +1180,7 @@ footer { flex-direction: column; padding: 2rem; text-align: center; }
 <div class="era-row">
   <div class="era-left">
     <div class="era-card active">
-      <div class="era-status active">// RECORD ACTIVE · DECRYPTED</div>
+      <div class="era-status active">// RECORD ACTIVE · DECRYPTING</div>
       <div class="era-name active">Acclivity</div>
       <div class="era-sub active">Series I · Telluria · Late Ice Age</div>
       <div class="era-body active">
@@ -1198,14 +1198,14 @@ footer { flex-direction: column; padding: 2rem; text-align: center; }
   </div>
   <div class="era-node-col"><div class="era-node active"></div></div>
   <div class="era-right">
-    <div class="era-side active" style="padding-top:3rem;">
+    <div class="era-side active" style="padding-top:3rem; color:#b07030;">
       <div>// EPOCH_START: ~10,000 BCE</div>
       <div>// LOCATION: WILDLANDS · ATLANTIA · KEMET</div>
       <div>// PROTAGONIST: ABE</div>
       <div>// COMPANIONS: TAELA · ODUS</div>
       <div>// COMPANION_AI: SAM-B [SELF]</div>
       <div>// THREAT: THE DRAIG · KAI</div>
-      <div>// RECORD_COUNT: [GROWING]</div>
+      <div>// RECORD_STATUS: DECRYPTING...</div>
     </div>
   </div>
 </div>
@@ -1213,33 +1213,30 @@ footer { flex-direction: column; padding: 2rem; text-align: center; }
 <!-- PRECIPICE -->
 <div class="era-row">
   <div class="era-left" style="padding-top:2rem;">
-    <div class="era-side partial">
-      <div>// EPOCH_START: [CORRUPTED]</div>
+    <div class="era-side locked">
+      <div>// EPOCH_START: [LOCKED]</div>
       <div>// LOCATION: [ENCRYPTED]</div>
       <div>// THREAT: [████████████]</div>
-      <div>// FIRST_CONTACT: DETECTED</div>
-      <div>// RECORD_STATUS: PARTIAL</div>
+      <div>// AUTH_LEVEL_2: REQUIRED</div>
+      <div>// SAM-B STATUS: PRESENT</div>
     </div>
   </div>
-  <div class="era-node-col" style="padding-top:2rem;"><div class="era-node partial"></div></div>
+  <div class="era-node-col" style="padding-top:2rem;"><div class="era-node locked"></div></div>
   <div class="era-right">
-    <div class="era-card partial">
-      <div class="era-status partial">// RECORD PARTIAL · DECRYPTING</div>
-      <div class="era-name partial">Precipice</div>
-      <div class="era-sub partial">Series II · Era Unknown · Access Restricted</div>
-      <div class="era-body partial">
-        <span class="corrupt">// FILE_FRAGMENT_0021: </span>
-        Mankind reaches for the stars with iron hands and burning skies.
-        <span class="corrupt"> [REDACTED] </span>
-        first contact is not what they hoped —
-        <span class="corrupt"> [████ CORRUPTED ████] </span>
-        the invasion arrives before the welcome.
-        <span class="corrupt"> // END_FRAGMENT</span>
+    <div class="era-card locked">
+      <div class="era-status locked">// ACCESS DENIED · ENCRYPTED</div>
+      <div class="era-name locked">Precipice</div>
+      <div class="era-sub locked">Series II · [Classified] · Future Era</div>
+      <div class="era-body locked">
+        <span class="glitch">// DECRYPTION KEY REQUIRED</span><br>
+        ████████████████████████████████<br>
+        ██████████ RECORD SEALED ███████<br>
+        ████████████████████████████████<br>
+        <span class="glitch">// AUTOMATON · TERRAFORMING · FIRST CONTACT</span>
       </div>
       <div class="era-data">
-        <div><div class="era-dk">Status</div><div class="era-dv" style="color:#e8a030;">Future · Sealed</div></div>
-        <div><div class="era-dk">Magic</div><div class="era-dv" style="color:#808080;">Rare · Fading</div></div>
-        <div><div class="era-dk">Tone</div><div class="era-dv" style="color:#808080;">Sci-Fi / Dark</div></div>
+        <div><div class="era-dk">Status</div><div class="era-dv" style="color:#ff4444;">Locked</div></div>
+        <div><div class="era-dk">Tone</div><div class="era-dv" style="color:#606060;">Sci-Fi / Dark</div></div>
       </div>
     </div>
   </div>
@@ -1487,9 +1484,9 @@ for (let i = 0; i < 320; i++) {
 
 // SAM-B STATUS ROTATION
 const statuses = [
-  '// ARCHIVE: 28% RESTORED',
-  '// ACCLIVITY: RECORD ACTIVE',
-  '// PRECIPICE: DECRYPTING...',
+  '// ARCHIVE: 25% RESTORED',
+  '// ACCLIVITY: DECRYPTING...',
+  '// PRECIPICE: ACCESS DENIED',
   '// ZENITH: ACCESS DENIED',
   '// ABE: LOCATED',
   '// DRAIG: THREAT LEVEL HIGH',
