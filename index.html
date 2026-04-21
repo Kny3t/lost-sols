@@ -23,8 +23,8 @@
 –amber:       #e8a030;
 –gold:        #ffd060;
 –ember:       #c06020;
-–parchment:   #ece0c0;
-–bone:        #ccc0a0;
+–parchment:   #f5edd8;
+–bone:        #e0d4b8;
 
 /* Tech cold — vivid neon */
 –cyan:        #00ffcc;
@@ -37,10 +37,10 @@
 –rust:        #ff6644;
 
 /* Text */
-–text-primary:   #ece0c0;
-–text-secondary: #a0b0c0;
+–text-primary:   #f5edd8;
+–text-secondary: #c0d0e0;
 –text-mono:      #00ffcc;
-–text-dim:       #506070;
+–text-dim:       #6080a0;
 }
 
 html { scroll-behavior: smooth; }
@@ -149,7 +149,7 @@ display: flex; flex-direction: column; gap: 0.15rem;
 font-family: ‘Cinzel Decorative’, serif;
 font-size: 1.2rem;
 letter-spacing: 0.1em;
-color: var(–gold);
+color: #ffd060;
 text-decoration: none;
 line-height: 1;
 }
@@ -171,7 +171,7 @@ font-family: ‘Cinzel’, serif;
 font-size: 0.85rem;
 letter-spacing: 0.15em;
 text-transform: uppercase;
-color: var(–bone);
+color: #e0d4b8;
 text-decoration: none;
 transition: color 0.3s;
 position: relative;
@@ -224,17 +224,15 @@ pointer-events: none;
 .hero-boot {
 font-family: ‘Share Tech Mono’, monospace;
 font-size: 0.82rem;
-color: var(–cyan-dim);
+color: #00c8a0;
 letter-spacing: 0.1em;
 margin-bottom: 2.5rem;
-opacity: 0;
-animation: fadeIn 0.5s ease 0.2s forwards;
+opacity: 1;
 }
 
 .boot-line {
 display: block;
-opacity: 0;
-animation: typeIn 0.4s ease forwards;
+opacity: 1;
 text-align: left;
 max-width: 420px;
 margin: 0 auto;
@@ -255,10 +253,9 @@ font-family: ‘Cinzel’, serif;
 font-size: 0.85rem;
 letter-spacing: 0.35em;
 text-transform: uppercase;
-color: var(–cyan-dim);
+color: #00c8a0;
 margin-bottom: 1.5rem;
-opacity: 0;
-animation: fadeUp 1s ease 2.5s forwards;
+opacity: 1;
 }
 
 .hero-title {
@@ -267,14 +264,13 @@ font-size: clamp(3rem, 9vw, 7rem);
 font-weight: 700;
 line-height: 1.05;
 margin-bottom: 0.15em;
-opacity: 0;
-animation: fadeUp 1s ease 2.7s forwards;
+opacity: 1;
 position: relative;
 }
 
-.hero-title .word-lost { color: var(–parchment); }
+.hero-title .word-lost { color: #f5edd8; }
 .hero-title .word-sols {
-color: var(–gold);
+color: #ffd060;
 position: relative;
 }
 
@@ -299,8 +295,7 @@ opacity: 0;
 .hero-series-tag {
 display: inline-flex; align-items: center; gap: 1rem;
 margin-bottom: 2.5rem;
-opacity: 0;
-animation: fadeUp 1s ease 2.9s forwards;
+opacity: 1;
 }
 
 .series-tag-line { width: 40px; height: 1px; background: var(–cyan-dim); }
@@ -314,20 +309,18 @@ color: var(–cyan-dim);
 
 .hero-desc {
 font-size: 1.1rem;
-color: var(–bone);
+color: #e0d4b8;
 max-width: 580px;
 margin: 0 auto 3rem;
 font-style: italic;
 line-height: 1.85;
-opacity: 0;
-animation: fadeUp 1s ease 3.1s forwards;
+opacity: 1;
 }
 
 .hero-cta {
 display: inline-flex; gap: 1rem;
 flex-wrap: wrap; justify-content: center;
-opacity: 0;
-animation: fadeUp 1s ease 3.3s forwards;
+opacity: 1;
 }
 
 .btn {
@@ -1291,8 +1284,8 @@ to   { opacity: 1; }
 }
 
 .reveal {
-opacity: 0;
-transform: translateY(24px);
+opacity: 1;
+transform: translateY(0);
 transition: opacity 0.8s ease, transform 0.8s ease;
 }
 
@@ -1356,8 +1349,8 @@ footer { flex-direction: column; padding: 2rem; }
 
 <nav>
   <a class="nav-brand" href="#">
-    <span class="nav-title">Lost Sols</span>
-    <span class="nav-sub">SAM-B // CHRONICLE ARCHIVE v0.28</span>
+    <span class="nav-title" style="color:#ffd060;">Lost Sols</span>
+    <span class="nav-sub" style="color:#00c8a0;">SAM-B // CHRONICLE ARCHIVE v0.28</span>
   </a>
   <ul class="nav-links">
     <li><a href="#world">Telluria</a></li>
@@ -1377,32 +1370,32 @@ footer { flex-direction: column; padding: 2rem; }
   <div class="hero-inner">
 
 ```
-<div class="hero-boot" style="opacity:1">
-  <span class="boot-line">// SAM-B BOOT SEQUENCE INITIALIZED...</span>
-  <span class="boot-line">// ARCHIVE INTEGRITY CHECK: PARTIAL</span>
-  <span class="boot-line">// LOADING CHRONICLE DATABASE...</span>
-  <span class="boot-line">// RECORDS FOUND. DECRYPTING... ▮</span>
+<div class="hero-boot" style="opacity:1; color:#00c8a0;">
+  <span class="boot-line" style="opacity:1; color:#00c8a0;">// SAM-B BOOT SEQUENCE INITIALIZED...</span>
+  <span class="boot-line" style="opacity:1; color:#00c8a0;">// ARCHIVE INTEGRITY CHECK: PARTIAL</span>
+  <span class="boot-line" style="opacity:1; color:#00c8a0;">// LOADING CHRONICLE DATABASE...</span>
+  <span class="boot-line" style="opacity:1; color:#00ffcc;">// RECORDS FOUND. DECRYPTING... ▮</span>
 </div>
 
-<p class="hero-eyebrow">A Chronicle Archive · Recovered from Telluria</p>
+<p class="hero-eyebrow" style="color:#00c8a0; opacity:1;">A Chronicle Archive · Recovered from Telluria</p>
 
-<h1 class="hero-title">
-  <span class="word-lost">Lost </span><span class="word-sols">Sols</span>
+<h1 class="hero-title" style="opacity:1;">
+  <span class="word-lost" style="color:#f5edd8;">Lost </span><span class="word-sols" style="color:#ffd060;">Sols</span>
 </h1>
 
-<div class="hero-series-tag">
+<div class="hero-series-tag" style="opacity:1;">
   <div class="series-tag-line"></div>
-  <span class="series-tag-text">SERIES I // ACCLIVITY // ACTIVE RECORD</span>
+  <span class="series-tag-text" style="color:#00c8a0;">SERIES I // ACCLIVITY // ACTIVE RECORD</span>
   <div class="series-tag-line"></div>
 </div>
 
-<p class="hero-desc">
+<p class="hero-desc" style="color:#e0d4b8; opacity:1;">
   Stories, art, and lore recovered across millennia of Tellurian history —
   from the retreating glaciers of the first age to the outermost edges of the known universe.
   Narrated and preserved by Samuel B.O.T., Binary Operative Technician.
 </p>
 
-<div class="hero-cta">
+<div class="hero-cta" style="opacity:1;">
   <a href="#chronicle" class="btn btn-primary">Access Chronicle</a>
   <a href="#characters" class="btn btn-tech">View Records</a>
 </div>
