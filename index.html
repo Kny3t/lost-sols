@@ -84,6 +84,52 @@ body {
   50% { opacity: 1; }
 }
 
+/* ── SPACE DUST CANVAS ── */
+#dust-canvas {
+  position: fixed; inset: 0;
+  pointer-events: none;
+  z-index: 1;
+  width: 100%; height: 100%;
+}
+
+/* ── VELOCITY HUD ── */
+.vel-hud {
+  position: fixed;
+  bottom: 0.8rem; right: 1.5rem;
+  z-index: 200;
+  display: flex; flex-direction: column;
+  align-items: flex-end;
+  gap: 0.3rem;
+}
+
+.vel-label {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.55rem;
+  color: #303540;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.vel-bar-wrap {
+  width: 48px; height: 1px;
+  background: #0a0f10;
+}
+
+.vel-bar {
+  height: 100%;
+  background: #00ffcc;
+  width: 0%;
+  transition: width 0.08s;
+}
+
+.vel-dir {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.52rem;
+  color: #303540;
+  letter-spacing: 0.1em;
+  transition: color 0.3s;
+}
+
 /* ── NAV ── */
 nav {
   position: fixed; top: 0; left: 0; right: 0;
@@ -1239,7 +1285,7 @@ footer {
 
 /* ── SAM-B HUD ── */
 .samb-hud {
-  position: fixed; bottom: 1.5rem; right: 1.5rem;
+  position: fixed; bottom: 2.2rem; right: 1.5rem;
   z-index: 200;
   display: flex; flex-direction: column; align-items: flex-end; gap: 0.5rem;
 }
@@ -1307,6 +1353,18 @@ footer {
 <!-- STARFIELD -->
 
 <div class="starfield" id="starfield"></div>
+
+<!-- SPACE DUST -->
+
+<canvas id="dust-canvas"></canvas>
+
+<!-- VELOCITY HUD -->
+
+<div class="vel-hud">
+  <span class="vel-label">// Velocity</span>
+  <div class="vel-bar-wrap"><div class="vel-bar" id="vel-bar"></div></div>
+  <span class="vel-dir" id="vel-dir">— idle</span>
+</div>
 
 <!-- SAM-B HUD -->
 
@@ -1881,6 +1939,121 @@ document.getElementById('sub-btn').addEventListener('click', function() {
     note.style.color = '#00a080';
   }
 });
+
+// ══════════════════════════════════════════
+// SPACE DUST PARTICLE SYSTEM
+// ══════════════════════════════════════════
+const dustCanvas = document.getElementById('dust-canvas');
+const dctx = dustCanvas.getContext('2d');
+
+function resizeDust() {
+  dustCanvas.width  = window.innerWidth;
+  dustCanvas.height = window.innerHeight;
+}
+resizeDust();
+window.addEventListener('resize', resizeDust);
+
+const DUST_COLORS = [
+  [255,255,255],[255,255,255],[255,255,255],[255,255,255],
+  [220,255,250],[220,255,250],
+  [0,255,204],
+  [180,240,235],
+];
+
+let scrollVel = 0;
+let scrollDir = -1;
+let decayTick = 0;
+let lastScrollY = window.scrollY;
+
+class Fleck {
+  constructor(randomY) { this.init(randomY); }
+
+  init(randomY) {
+    this.x    = Math.random() * dustCanvas.width;
+    this.y    = randomY
+      ? Math.random() * dustCanvas.height
+      : (scrollDir < 0 ? -4 : dustCanvas.height + 4);
+    this.sz   = Math.random() * 1.0 + 0.2;
+    this.col  = DUST_COLORS[Math.floor(Math.random() * DUST_COLORS.length)];
+    this.spd  = Math.random() * 0.5 + 0.5;
+    this.a    = 0;
+    this.maxA = Math.random() * 0.45 + 0.15;
+  }
+
+  update() {
+    this.y += scrollVel * this.spd * scrollDir * -1;
+    this.x += (Math.random() - 0.5) * scrollVel * 0.05;
+    const want = scrollVel > 0.4 ? this.maxA : 0;
+    this.a += (want - this.a) * 0.07;
+    if (this.y < -6 || this.y > dustCanvas.height + 6 ||
+        this.x < -6 || this.x > dustCanvas.width + 6) {
+      this.init(false);
+    }
+  }
+
+  draw() {
+    if (this.a < 0.01) return;
+    const [r,g,b] = this.col;
+    if (scrollVel > 10) {
+      const len = Math.min(scrollVel * this.spd * 0.35, 7);
+      dctx.beginPath();
+      dctx.strokeStyle = `rgba(${r},${g},${b},${this.a})`;
+      dctx.lineWidth = this.sz * 0.55;
+      dctx.moveTo(this.x, this.y);
+      dctx.lineTo(this.x, this.y + len * (scrollDir > 0 ? 1 : -1));
+      dctx.stroke();
+    } else {
+      dctx.beginPath();
+      dctx.arc(this.x, this.y, this.sz * 0.6, 0, Math.PI*2);
+      dctx.fillStyle = `rgba(${r},${g},${b},${this.a})`;
+      dctx.fill();
+    }
+  }
+}
+
+const flecks = Array.from({ length: 200 }, () => new Fleck(true));
+
+// Scroll tracking
+window.addEventListener('scroll', () => {
+  const y     = window.scrollY;
+  const delta = y - lastScrollY;
+  scrollVel = Math.abs(delta) * 1.3;
+  scrollDir = delta >= 0 ? -1 : 1;
+  decayTick = 0;
+  lastScrollY = y;
+
+  const pct = Math.min(scrollVel / 28 * 100, 100);
+  document.getElementById('vel-bar').style.width = pct + '%';
+  const dirEl = document.getElementById('vel-dir');
+  if (delta > 0) {
+    dirEl.textContent = '↓ descending';
+    dirEl.style.color = '#00a080';
+  } else {
+    dirEl.textContent = '↑ ascending';
+    dirEl.style.color = '#e8a030';
+  }
+}, { passive: true });
+
+// Dust animation loop
+function dustLoop() {
+  dctx.clearRect(0, 0, dustCanvas.width, dustCanvas.height);
+  decayTick++;
+  if (decayTick > 2) {
+    scrollVel *= 0.86;
+    if (scrollVel < 0.04) {
+      scrollVel = 0;
+      const dirEl = document.getElementById('vel-dir');
+      if (dirEl) {
+        dirEl.textContent = '— idle';
+        dirEl.style.color = '#303540';
+      }
+      document.getElementById('vel-bar').style.width = '0%';
+    }
+  }
+  flecks.forEach(f => { f.update(); f.draw(); });
+  requestAnimationFrame(dustLoop);
+}
+dustLoop();
 
 // ══════════════════════════════════════════
 // UTILITIES
