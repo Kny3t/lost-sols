@@ -78,7 +78,7 @@ body {
 }
 
 @keyframes twinkle {
-  0%, 100% { opacity: 0.6; }
+  0%, 100% { opacity: 0.75; }
   50% { opacity: 1; }
 }
 
@@ -1870,8 +1870,10 @@ const sf = document.getElementById('starfield');
 for (let i = 0; i < 420; i++) {
   const s = document.createElement('div');
   s.className = 'star';
-  const sz = Math.random() * 4 + 0.8;
-  const glow = sz > 2 ? `box-shadow:0 0 ${sz*3}px rgba(255,255,255,0.9);` : '';
+  const sz = Math.random() * 5 + 1;
+  const glow = sz > 2
+    ? `box-shadow:0 0 ${sz*4}px rgba(255,255,255,1), 0 0 ${sz*2}px rgba(255,255,255,0.8);`
+    : `box-shadow:0 0 ${sz*2}px rgba(255,255,255,0.6);`;
   s.style.cssText = `width:${sz}px;height:${sz}px;left:${Math.random()*100}%;top:${Math.random()*100}%;animation-duration:${Math.random()*5+2}s;animation-delay:${Math.random()*6}s;${glow}`;
   sf.appendChild(s);
 }
@@ -1956,7 +1958,7 @@ class Fleck {
     this.y += scrollVel * this.spd * scrollDir * -1;
     this.x += (Math.random() - 0.5) * scrollVel * 0.05;
     const want = scrollVel > 0.1 ? this.maxA : 0;
-    this.a += (want - this.a) * 0.07;
+    this.a += (want - this.a) * 0.12;
     if (this.y < -6 || this.y > dustCanvas.height + 6 ||
         this.x < -6 || this.x > dustCanvas.width + 6) {
       this.init(false);
@@ -1966,7 +1968,7 @@ class Fleck {
   draw() {
     if (this.a < 0.01) return;
     const [r,g,b] = this.col;
-    if (scrollVel > 10) {
+    if (scrollVel > 6) {
       const len = Math.min(scrollVel * this.spd * 0.35, 7);
       dctx.beginPath();
       dctx.strokeStyle = `rgba(${r},${g},${b},${this.a})`;
@@ -1983,7 +1985,7 @@ class Fleck {
   }
 }
 
-const flecks = Array.from({ length: 200 }, () => new Fleck(true));
+const flecks = Array.from({ length: 280 }, () => new Fleck(true));
 
 // Scroll tracking
 window.addEventListener('scroll', () => {
