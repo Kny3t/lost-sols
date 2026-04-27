@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -14,28 +15,29 @@ document.fonts.ready.then(function() {
 });
 
 // FontFace API fallback - explicitly load Cinzel Decorative
-if ('FontFace' in window) {
-  const cinzelDec = new FontFace('Cinzel Decorative',
-    'url(https://fonts.gstatic.com/s/cinzeldecorative/v16/daaHSScvJGqLYhG8nNt8KPaJvgP65gPBSg.woff2) format("woff2")',
-    { weight: '400' }
-  );
-  const cinzelDecBold = new FontFace('Cinzel Decorative',
-    'url(https://fonts.gstatic.com/s/cinzeldecorative/v16/daaCSScvJGqLYhG8nNt8KPaJvgP-aSWqMvI.woff2) format("woff2")',
-    { weight: '700' }
-  );
-  Promise.all([cinzelDec.load(), cinzelDecBold.load()]).then(function(fonts) {
-    fonts.forEach(f => document.fonts.add(f));
-    document.body.classList.add('fonts-loaded');
-    // Force repaint of title elements
-    document.querySelectorAll('.hero-title, .nav-title, .sec-title, .era-name, .footer-title, .updates-title').forEach(el => {
-      el.style.opacity = '0.99';
-      setTimeout(() => el.style.opacity = '1', 50);
-    });
-  }).catch(function(err) {
-    console.log('Font load failed, using fallback:', err);
-  });
+if (‘FontFace’ in window) {
+const cinzelDec = new FontFace(‘Cinzel Decorative’,
+‘url(https://fonts.gstatic.com/s/cinzeldecorative/v16/daaHSScvJGqLYhG8nNt8KPaJvgP65gPBSg.woff2) format(“woff2”)’,
+{ weight: ‘400’ }
+);
+const cinzelDecBold = new FontFace(‘Cinzel Decorative’,
+‘url(https://fonts.gstatic.com/s/cinzeldecorative/v16/daaCSScvJGqLYhG8nNt8KPaJvgP-aSWqMvI.woff2) format(“woff2”)’,
+{ weight: ‘700’ }
+);
+Promise.all([cinzelDec.load(), cinzelDecBold.load()]).then(function(fonts) {
+fonts.forEach(f => document.fonts.add(f));
+document.body.classList.add(‘fonts-loaded’);
+// Force repaint of title elements
+document.querySelectorAll(’.hero-title, .nav-title, .sec-title, .era-name, .footer-title, .updates-title’).forEach(el => {
+el.style.opacity = ‘0.99’;
+setTimeout(() => el.style.opacity = ‘1’, 50);
+});
+}).catch(function(err) {
+console.log(‘Font load failed, using fallback:’, err);
+});
 }
 </script>
+
 <style>
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -1302,17 +1304,19 @@ footer {
 .typed-cursor {
   display: inline-block;
   width: 0.55em;
-  height: 1.1em;
+  height: 1em;
   background: #00ffcc;
-  vertical-align: text-bottom;
-  margin-left: 2px;
+  vertical-align: middle;
+  margin-left: 3px;
   animation: blink 1.2s step-end infinite;
+  position: relative;
+  top: 0.05em;
 }
 
 .typed-cursor.cursor-amber { background: #e8a030; }
 .typed-cursor.cursor-red   { background: #ff4444; }
 
-.typed-line { display: block; min-height: 1.4em; }
+.typed-line { display: block; min-height: 1.6em; line-height: 1.6; }
 .typed-block { display: block; }
 
 /* Highlight spans inside typed content */
@@ -1338,16 +1342,20 @@ footer {
   .sub-input { border-right: 1px solid rgba(0,255,204,0.2); border-bottom: none; }
 }
 </style>
+
 </head>
 <body>
 
 <!-- STARFIELD -->
+
 <canvas id="star-canvas"></canvas>
 
 <!-- SPACE DUST -->
+
 <canvas id="dust-canvas"></canvas>
 
 <!-- VELOCITY HUD -->
+
 <div class="vel-hud">
   <span class="vel-label">// Velocity</span>
   <div class="vel-bar-wrap"><div class="vel-bar" id="vel-bar"></div></div>
@@ -1355,6 +1363,7 @@ footer {
 </div>
 
 <!-- SAM-B HUD -->
+
 <div class="samb-hud">
   <div class="samb-cube">
     <svg viewBox="0 0 36 36" fill="none">
@@ -1374,6 +1383,7 @@ footer {
 </div>
 
 <!-- NAV -->
+
 <nav>
   <a class="nav-brand" href="#">
     <span class="nav-title">Lost Sols</span>
@@ -1401,6 +1411,7 @@ footer {
 </nav>
 
 <!-- FULL SCREEN NAV OVERLAY -->
+
 <div class="nav-overlay" id="nav-overlay">
   <div class="overlay-status">// SAM-B NAVIGATION UPLINK · SELECT DESTINATION</div>
   <ul class="overlay-links">
@@ -1428,39 +1439,42 @@ footer {
 </div>
 
 <!-- ═══ HERO ═══ -->
+
 <section class="hero">
   <div class="hero-grid"></div>
   <div class="hero-inner">
 
-    <div class="hero-boot" id="hero-boot">
-      <span class="typed-line" data-text="// SAM-B BOOT SEQUENCE INITIALIZED..."></span>
-      <span class="typed-line" data-text="// ARCHIVE INTEGRITY CHECK: PARTIAL"></span>
-      <span class="typed-line" data-text="// LOADING CHRONICLE DATABASE..."></span>
-      <span class="typed-line" data-text="// RECORDS FOUND. DECRYPTING..." data-cursor="true"></span>
-    </div>
+```
+<div class="hero-boot" id="hero-boot">
+  <span class="typed-line" data-text="// SAM-B BOOT SEQUENCE INITIALIZED..."></span>
+  <span class="typed-line" data-text="// ARCHIVE INTEGRITY CHECK: PARTIAL"></span>
+  <span class="typed-line" data-text="// LOADING CHRONICLE DATABASE..."></span>
+  <span class="typed-line" data-text="// RECORDS FOUND. DECRYPTING..." data-cursor="true"></span>
+</div>
 
-    <p class="hero-eyebrow">A Chronicle Archive · Recovered from Telluria</p>
+<p class="hero-eyebrow">A Chronicle Archive · Recovered from Telluria</p>
 
-    <h1 class="hero-title">
-      <span class="t-lost">Lost </span><span class="t-sols">Sols</span>
-    </h1>
+<h1 class="hero-title">
+  <span class="t-lost">Lost </span><span class="t-sols">Sols</span>
+</h1>
 
-    <div class="hero-tag">
-      <div class="hero-tag-line"></div>
-      <span class="hero-tag-text">SERIES I // ACCLIVITY // ACTIVE RECORD</span>
-      <div class="hero-tag-line"></div>
-    </div>
+<div class="hero-tag">
+  <div class="hero-tag-line"></div>
+  <span class="hero-tag-text">SERIES I // ACCLIVITY // ACTIVE RECORD</span>
+  <div class="hero-tag-line"></div>
+</div>
 
-    <p class="hero-desc">
-      Stories, art, and lore recovered across millennia of Tellurian history —
-      from the retreating glaciers of the first age to the outermost edges of the known universe.
-      Narrated and preserved by Samuel B.O.T., Binary Operative Technician.
-    </p>
+<p class="hero-desc">
+  Stories, art, and lore recovered across millennia of Tellurian history —
+  from the retreating glaciers of the first age to the outermost edges of the known universe.
+  Narrated and preserved by Samuel B.O.T., Binary Operative Technician.
+</p>
 
-    <div class="hero-btns">
-      <a href="#chronicle" class="btn btn-gold">Access Chronicle</a>
-      <a href="#characters" class="btn btn-cyan">View Records</a>
-    </div>
+<div class="hero-btns">
+  <a href="#chronicle" class="btn btn-gold">Access Chronicle</a>
+  <a href="#characters" class="btn btn-cyan">View Records</a>
+</div>
+```
 
   </div>
 
@@ -1471,6 +1485,7 @@ footer {
 </section>
 
 <!-- TICKER -->
+
 <div class="ticker">
   <div class="ticker-track">
     <span class="ticker-item"><span class="hi">EPOCH</span><span class="sep">//</span>ACCLIVITY — DECRYPTING</span>
@@ -1493,58 +1508,63 @@ footer {
 </div>
 
 <!-- ═══ WORLD ═══ -->
+
 <section class="wrap" id="world">
   <div class="world-grid">
 
-    <div class="world-artifact">
-      <div class="artifact-box">
-        <div class="artifact-scan"></div>
-        <div class="artifact-corner tl"></div>
-        <div class="artifact-corner tr"></div>
-        <div class="artifact-corner bl"></div>
-        <div class="artifact-corner br"></div>
-        <div class="artifact-icon">✦</div>
-        <div class="artifact-txt">World Map<br>Cartography<br>Pending</div>
-      </div>
-    </div>
+```
+<div class="world-artifact">
+  <div class="artifact-box">
+    <div class="artifact-scan"></div>
+    <div class="artifact-corner tl"></div>
+    <div class="artifact-corner tr"></div>
+    <div class="artifact-corner bl"></div>
+    <div class="artifact-corner br"></div>
+    <div class="artifact-icon">✦</div>
+    <div class="artifact-txt">World Map<br>Cartography<br>Pending</div>
+  </div>
+</div>
 
-    <div class="world-text">
-      <span class="sec-label">Archive Record 001 · The Setting</span>
-      <h2 class="sec-title">The World Called <span class="gold">Telluria</span></h2>
-      <p>
-        Telluria is the name the old gods and those not of this earth gave to it —
-        a world groaning under the last weight of ice, vast glaciers retreating northward
-        and exposing land no living memory has ever touched.
-      </p>
-      <p>
-        It is an antediluvian world. Ancient. Wild. Standing between one catastrophe
-        and the next, in the window that history will one day be unable to reach —
-        where magic is not a wonder but simply the air itself, and the line between
-        deity and man is the thinnest it will ever be.
-      </p>
-      <div class="world-data">
-        <div>
-          <div class="world-data-k">Designation</div>
-          <div class="world-data-v">Telluria</div>
-        </div>
-        <div>
-          <div class="world-data-k">Era</div>
-          <div class="world-data-v">Late Ice Age → Antediluvian</div>
-        </div>
-        <div>
-          <div class="world-data-k">Magic Index</div>
-          <div class="world-data-v">Omnipresent</div>
-        </div>
-        <div>
-          <div class="world-data-k">Species</div>
-          <div class="world-data-v">Humans · Giants · Elves · Draig · More</div>
-        </div>
-      </div>
+<div class="world-text">
+  <span class="sec-label">Archive Record 001 · The Setting</span>
+  <h2 class="sec-title">The World Called <span class="gold">Telluria</span></h2>
+  <p>
+    Telluria is the name the old gods and those not of this earth gave to it —
+    a world groaning under the last weight of ice, vast glaciers retreating northward
+    and exposing land no living memory has ever touched.
+  </p>
+  <p>
+    It is an antediluvian world. Ancient. Wild. Standing between one catastrophe
+    and the next, in the window that history will one day be unable to reach —
+    where magic is not a wonder but simply the air itself, and the line between
+    deity and man is the thinnest it will ever be.
+  </p>
+  <div class="world-data">
+    <div>
+      <div class="world-data-k">Designation</div>
+      <div class="world-data-v">Telluria</div>
     </div>
+    <div>
+      <div class="world-data-k">Era</div>
+      <div class="world-data-v">Late Ice Age → Antediluvian</div>
+    </div>
+    <div>
+      <div class="world-data-k">Magic Index</div>
+      <div class="world-data-v">Omnipresent</div>
+    </div>
+    <div>
+      <div class="world-data-k">Species</div>
+      <div class="world-data-v">Humans · Giants · Elves · Draig · More</div>
+    </div>
+  </div>
+</div>
+```
+
   </div>
 </section>
 
 <!-- DIVIDER -->
+
 <div class="divider">
   <div class="div-line-warm"></div>
   <div class="div-diamond"></div>
@@ -1552,6 +1572,7 @@ footer {
 </div>
 
 <!-- ═══ CHRONICLE ═══ -->
+
 <section class="chronicle-wrap" id="chronicle">
 
   <div class="chronicle-head">
@@ -1575,122 +1596,125 @@ footer {
 
   <div class="chronicle-track">
 
-    <!-- ACCLIVITY -->
-    <div class="era-row">
-      <div class="era-left">
-        <div class="era-card active">
-          <div class="era-status active typed-block" data-text="// RECORD ACTIVE · DECRYPTING" data-cursor="true" data-cursor-class="cursor-amber"></div>
-          <div class="era-name active">Acclivity</div>
-          <div class="era-sub active">Series I · Telluria · Late Ice Age</div>
-          <div class="era-body active">
-            The upward slope. The beginning of days. Abe washes ashore on a forgotten continent,
-            carrying millennia of slumber and the weight of a family he cannot find.
-            As the glaciers retreat, something ancient wakes with them — and the gods
-            who kept mankind small are running out of patience.
-          </div>
-          <div class="era-data">
-            <div><div class="era-dk">Status</div><div class="era-dv">Book One · Active</div></div>
-            <div><div class="era-dk">Magic</div><div class="era-dv">Omnipresent</div></div>
-            <div><div class="era-dk">Tone</div><div class="era-dv">Mythic Fantasy</div></div>
-          </div>
-        </div>
+```
+<!-- ACCLIVITY -->
+<div class="era-row">
+  <div class="era-left">
+    <div class="era-card active">
+      <div class="era-status active typed-block" data-text="// RECORD ACTIVE · DECRYPTING" data-cursor="true" data-cursor-class="cursor-amber"></div>
+      <div class="era-name active">Acclivity</div>
+      <div class="era-sub active">Series I · Telluria · Late Ice Age</div>
+      <div class="era-body active">
+        The upward slope. The beginning of days. Abe washes ashore on a forgotten continent,
+        carrying millennia of slumber and the weight of a family he cannot find.
+        As the glaciers retreat, something ancient wakes with them — and the gods
+        who kept mankind small are running out of patience.
       </div>
-      <div class="era-node-col"><div class="era-node active"></div></div>
-      <div class="era-right">
-        <div class="era-side active" style="padding-top:3rem; color:#b07030;">
-          <div>// EPOCH_START: ~10,000 BCE</div>
-          <div>// LOCATION: WILDLANDS · ATLANTIA · KEMET</div>
-          <div>// PROTAGONIST: ABE</div>
-          <div>// COMPANIONS: TAELA · ODUS</div>
-          <div>// COMPANION_AI: SAM-B [SELF]</div>
-          <div>// THREAT: THE DRAIG · KAI</div>
-          <div>// RECORD_STATUS: DECRYPTING...</div>
-        </div>
+      <div class="era-data">
+        <div><div class="era-dk">Status</div><div class="era-dv">Book One · Active</div></div>
+        <div><div class="era-dk">Magic</div><div class="era-dv">Omnipresent</div></div>
+        <div><div class="era-dk">Tone</div><div class="era-dv">Mythic Fantasy</div></div>
       </div>
     </div>
+  </div>
+  <div class="era-node-col"><div class="era-node active"></div></div>
+  <div class="era-right">
+    <div class="era-side active" style="padding-top:3rem; color:#b07030;">
+      <div>// EPOCH_START: ~10,000 BCE</div>
+      <div>// LOCATION: WILDLANDS · ATLANTIA · KEMET</div>
+      <div>// PROTAGONIST: ABE</div>
+      <div>// COMPANIONS: TAELA · ODUS</div>
+      <div>// COMPANION_AI: SAM-B [SELF]</div>
+      <div>// THREAT: THE DRAIG · KAI</div>
+      <div>// RECORD_STATUS: DECRYPTING...</div>
+    </div>
+  </div>
+</div>
 
-    <!-- PRECIPICE -->
-    <div class="era-row">
-      <div class="era-left" style="padding-top:2rem;">
-        <div class="era-side locked">
-          <div>// EPOCH_START: [LOCKED]</div>
-          <div>// LOCATION: [ENCRYPTED]</div>
-          <div>// THREAT: [████████████]</div>
-          <div>// AUTH_LEVEL_2: REQUIRED</div>
-          <div>// SAM-B STATUS: PRESENT</div>
-        </div>
+<!-- PRECIPICE -->
+<div class="era-row">
+  <div class="era-left" style="padding-top:2rem;">
+    <div class="era-side locked">
+      <div>// EPOCH_START: [LOCKED]</div>
+      <div>// LOCATION: [ENCRYPTED]</div>
+      <div>// THREAT: [████████████]</div>
+      <div>// AUTH_LEVEL_2: REQUIRED</div>
+      <div>// SAM-B STATUS: PRESENT</div>
+    </div>
+  </div>
+  <div class="era-node-col" style="padding-top:2rem;"><div class="era-node locked"></div></div>
+  <div class="era-right">
+    <div class="era-card locked">
+      <div class="era-status locked typed-block" data-text="// ACCESS DENIED · ENCRYPTED" data-cursor="true" data-cursor-class="cursor-red"></div>
+      <div class="era-name locked">Precipice</div>
+      <div class="era-sub locked">Series II · [Classified] · Future Era</div>
+      <div class="era-body locked">
+        <span class="glitch">// DECRYPTION KEY REQUIRED</span><br>
+        ████████████████████████████████<br>
+        ██████████ RECORD SEALED ███████<br>
+        ████████████████████████████████<br>
+        <span class="glitch">// AUTOMATON · TERRAFORMING · FIRST CONTACT</span>
       </div>
-      <div class="era-node-col" style="padding-top:2rem;"><div class="era-node locked"></div></div>
-      <div class="era-right">
-        <div class="era-card locked">
-          <div class="era-status locked typed-block" data-text="// ACCESS DENIED · ENCRYPTED" data-cursor="true" data-cursor-class="cursor-red"></div>
-          <div class="era-name locked">Precipice</div>
-          <div class="era-sub locked">Series II · [Classified] · Future Era</div>
-          <div class="era-body locked">
-            <span class="glitch">// DECRYPTION KEY REQUIRED</span><br>
-            ████████████████████████████████<br>
-            ██████████ RECORD SEALED ███████<br>
-            ████████████████████████████████<br>
-            <span class="glitch">// AUTOMATON · TERRAFORMING · FIRST CONTACT</span>
-          </div>
-          <div class="era-data">
-            <div><div class="era-dk">Status</div><div class="era-dv" style="color:#ff4444;">Locked</div></div>
-            <div><div class="era-dk">Tone</div><div class="era-dv" style="color:#606060;">Sci-Fi / Dark</div></div>
-          </div>
-        </div>
+      <div class="era-data">
+        <div><div class="era-dk">Status</div><div class="era-dv" style="color:#ff4444;">Locked</div></div>
+        <div><div class="era-dk">Tone</div><div class="era-dv" style="color:#606060;">Sci-Fi / Dark</div></div>
       </div>
     </div>
+  </div>
+</div>
 
-    <!-- ZENITH -->
-    <div class="era-row">
-      <div class="era-left">
-        <div class="era-card locked">
-          <div class="era-status locked typed-block" data-text="// ACCESS DENIED · ENCRYPTED" data-cursor="true" data-cursor-class="cursor-red"></div>
-          <div class="era-name locked">Zenith</div>
-          <div class="era-sub locked">Series III · [Classified] · Deep Future</div>
-          <div class="era-body locked">
-            <span class="glitch">// DECRYPTION KEY REQUIRED</span><br>
-            ████████████████████████████████<br>
-            ██████████ RECORD SEALED ███████<br>
-            ████████████████████████████████<br>
-            <span class="glitch">// PILOT AND KAYA RECORDS DETECTED</span>
-          </div>
-          <div class="era-data">
-            <div><div class="era-dk">Status</div><div class="era-dv" style="color:#ff4444;">Locked</div></div>
-            <div><div class="era-dk">Scope</div><div class="era-dv" style="color:#606060;">Galactic / Multiversal</div></div>
-          </div>
-        </div>
+<!-- ZENITH -->
+<div class="era-row">
+  <div class="era-left">
+    <div class="era-card locked">
+      <div class="era-status locked typed-block" data-text="// ACCESS DENIED · ENCRYPTED" data-cursor="true" data-cursor-class="cursor-red"></div>
+      <div class="era-name locked">Zenith</div>
+      <div class="era-sub locked">Series III · [Classified] · Deep Future</div>
+      <div class="era-body locked">
+        <span class="glitch">// DECRYPTION KEY REQUIRED</span><br>
+        ████████████████████████████████<br>
+        ██████████ RECORD SEALED ███████<br>
+        ████████████████████████████████<br>
+        <span class="glitch">// PILOT AND KAYA RECORDS DETECTED</span>
       </div>
-      <div class="era-node-col"><div class="era-node locked"></div></div>
-      <div class="era-right" style="padding-top:2rem;">
-        <div class="era-side locked">
-          <div>// EPOCH_START: [LOCKED]</div>
-          <div>// SCOPE: [GALAXY SCALE]</div>
-          <div>// MAGIC: [WIDESPREAD · ACCEPTED]</div>
-          <div>// AUTH_LEVEL_3: REQUIRED</div>
-          <div>// SAM-B STATUS: PRESENT</div>
-        </div>
+      <div class="era-data">
+        <div><div class="era-dk">Status</div><div class="era-dv" style="color:#ff4444;">Locked</div></div>
+        <div><div class="era-dk">Scope</div><div class="era-dv" style="color:#606060;">Galactic / Multiversal</div></div>
       </div>
     </div>
+  </div>
+  <div class="era-node-col"><div class="era-node locked"></div></div>
+  <div class="era-right" style="padding-top:2rem;">
+    <div class="era-side locked">
+      <div>// EPOCH_START: [LOCKED]</div>
+      <div>// SCOPE: [GALAXY SCALE]</div>
+      <div>// MAGIC: [WIDESPREAD · ACCEPTED]</div>
+      <div>// AUTH_LEVEL_3: REQUIRED</div>
+      <div>// SAM-B STATUS: PRESENT</div>
+    </div>
+  </div>
+</div>
 
-    <!-- SUPPLEMENTAL -->
-    <div class="supplemental">
-      <div class="supp-vert">SUPP REC</div>
-      <div>
-        <div class="supp-tag">// SUPPLEMENTAL · ALL ERAS</div>
-        <div class="supp-name">[ Designation Pending ]</div>
-        <div class="supp-body">
-          A collection of supplemental records spanning all eras — the stories of those who did not lead,
-          but whose lives made the leading possible. Background characters. Side narratives. Lost voices.
-          Classification: ANTHOLOGY. // STATUS: DESIGNATION PENDING · IN DEVELOPMENT
-        </div>
-      </div>
+<!-- SUPPLEMENTAL -->
+<div class="supplemental">
+  <div class="supp-vert">SUPP REC</div>
+  <div>
+    <div class="supp-tag">// SUPPLEMENTAL · ALL ERAS</div>
+    <div class="supp-name">[ Designation Pending ]</div>
+    <div class="supp-body">
+      A collection of supplemental records spanning all eras — the stories of those who did not lead,
+      but whose lives made the leading possible. Background characters. Side narratives. Lost voices.
+      Classification: ANTHOLOGY. // STATUS: DESIGNATION PENDING · IN DEVELOPMENT
     </div>
+  </div>
+</div>
+```
 
   </div>
 </section>
 
 <!-- DIVIDER -->
+
 <div class="divider">
   <div class="div-line-warm"></div>
   <div class="div-diamond"></div>
@@ -1698,6 +1722,7 @@ footer {
 </div>
 
 <!-- ═══ CHARACTERS ═══ -->
+
 <section class="wrap" id="characters">
   <div style="margin-bottom:3rem;">
     <span class="sec-label">Archive Record 003 · Personnel Files</span>
@@ -1722,42 +1747,46 @@ footer {
       </div>
     </div>
 
-    <div class="char-card">
-      <div class="char-inner">
-        <div class="char-scan"></div>
-        <div class="char-glyph">⚔</div>
-        <div class="char-placeholder">Portrait<br>Uploading</div>
-      </div>
-      <div class="char-overlay">
-        <div>
-          <div class="char-name">Odus</div>
-          <div class="char-role">// The Little Giant · Acclivity</div>
-        </div>
-      </div>
+```
+<div class="char-card">
+  <div class="char-inner">
+    <div class="char-scan"></div>
+    <div class="char-glyph">⚔</div>
+    <div class="char-placeholder">Portrait<br>Uploading</div>
+  </div>
+  <div class="char-overlay">
+    <div>
+      <div class="char-name">Odus</div>
+      <div class="char-role">// The Little Giant · Acclivity</div>
     </div>
+  </div>
+</div>
 
-    <div class="char-card">
-      <div class="char-inner">
-        <div class="char-scan"></div>
-        <div class="char-glyph">✦</div>
-        <div class="char-placeholder">Portrait<br>Uploading</div>
-      </div>
-      <div class="char-overlay">
-        <div>
-          <div class="char-name">Taela</div>
-          <div class="char-role">// Dire Fox Druid · Acclivity</div>
-        </div>
-      </div>
+<div class="char-card">
+  <div class="char-inner">
+    <div class="char-scan"></div>
+    <div class="char-glyph">✦</div>
+    <div class="char-placeholder">Portrait<br>Uploading</div>
+  </div>
+  <div class="char-overlay">
+    <div>
+      <div class="char-name">Taela</div>
+      <div class="char-role">// Dire Fox Druid · Acclivity</div>
     </div>
+  </div>
+</div>
 
-    <div class="char-add">
-      <span class="char-add-icon">+</span>
-      <span>More Records<br>Pending Restoration</span>
-    </div>
+<div class="char-add">
+  <span class="char-add-icon">+</span>
+  <span>More Records<br>Pending Restoration</span>
+</div>
+```
+
   </div>
 </section>
 
 <!-- DIVIDER -->
+
 <div class="divider">
   <div class="div-line-warm"></div>
   <div class="div-diamond"></div>
@@ -1765,47 +1794,52 @@ footer {
 </div>
 
 <!-- ═══ ABOUT ═══ -->
+
 <section class="wrap" id="about">
   <div class="about-grid">
 
-    <div class="about-portrait-wrap">
-      <div class="about-portrait">
-        <div class="portrait-scan"></div>
-        <div class="portrait-glyph">✦</div>
-      </div>
-      <div class="portrait-data">
-        <div class="portrait-row"><span class="portrait-k">ARCHIVE</span><span class="portrait-v">LOST SOLS</span></div>
-        <div class="portrait-row"><span class="portrait-k">NARRATOR</span><span class="portrait-v">SAM-B</span></div>
-        <div class="portrait-row"><span class="portrait-k">ORIGIN</span><span class="portrait-v">TELLURIA</span></div>
-        <div class="portrait-row"><span class="portrait-k">STATUS</span><span class="portrait-v">ACTIVE · GROWING</span></div>
-      </div>
-    </div>
+```
+<div class="about-portrait-wrap">
+  <div class="about-portrait">
+    <div class="portrait-scan"></div>
+    <div class="portrait-glyph">✦</div>
+  </div>
+  <div class="portrait-data">
+    <div class="portrait-row"><span class="portrait-k">ARCHIVE</span><span class="portrait-v">LOST SOLS</span></div>
+    <div class="portrait-row"><span class="portrait-k">NARRATOR</span><span class="portrait-v">SAM-B</span></div>
+    <div class="portrait-row"><span class="portrait-k">ORIGIN</span><span class="portrait-v">TELLURIA</span></div>
+    <div class="portrait-row"><span class="portrait-k">STATUS</span><span class="portrait-v">ACTIVE · GROWING</span></div>
+  </div>
+</div>
 
-    <div class="about-text">
-      <span class="sec-label">Archive Record 004 · Origin</span>
-      <h2 class="sec-title" style="margin-bottom:1.5rem;">About <span class="gold">Lost Sols</span></h2>
-      <p>
-        Lost Sols is a personal creative project — a living archive of stories, characters,
-        art, and lore drawn from a world that history has forgotten. It began as a question:
-        what happened in the vast silence before the written record?
-      </p>
-      <p>
-        The answer is Telluria. And the stories are only beginning. The Acclivity series
-        follows Abe — ancient, searching, slow to age — as he wakes into a world at the edge
-        of its first great change. His companions. His brother. His gods. And somewhere in the
-        dark of a Draig vault, a small cube-shaped archive that has been watching everything.
-      </p>
-      <p>
-        Character art is central to this project — visual portraits that give faces to the
-        people of these forgotten ages. The first book is being written now. This site grows
-        with it: more records, more art, more lore as the Chronicle is restored.
-      </p>
-      <a href="#updates" class="btn btn-cyan" style="margin-top:1rem;">Follow the Signal →</a>
-    </div>
+<div class="about-text">
+  <span class="sec-label">Archive Record 004 · Origin</span>
+  <h2 class="sec-title" style="margin-bottom:1.5rem;">About <span class="gold">Lost Sols</span></h2>
+  <p>
+    Lost Sols is a personal creative project — a living archive of stories, characters,
+    art, and lore drawn from a world that history has forgotten. It began as a question:
+    what happened in the vast silence before the written record?
+  </p>
+  <p>
+    The answer is Telluria. And the stories are only beginning. The Acclivity series
+    follows Abe — ancient, searching, slow to age — as he wakes into a world at the edge
+    of its first great change. His companions. His brother. His gods. And somewhere in the
+    dark of a Draig vault, a small cube-shaped archive that has been watching everything.
+  </p>
+  <p>
+    Character art is central to this project — visual portraits that give faces to the
+    people of these forgotten ages. The first book is being written now. This site grows
+    with it: more records, more art, more lore as the Chronicle is restored.
+  </p>
+  <a href="#updates" class="btn btn-cyan" style="margin-top:1rem;">Follow the Signal →</a>
+</div>
+```
+
   </div>
 </section>
 
 <!-- DIVIDER -->
+
 <div class="divider">
   <div class="div-line-warm"></div>
   <div class="div-diamond"></div>
@@ -1813,6 +1847,7 @@ footer {
 </div>
 
 <!-- ═══ UPDATES ═══ -->
+
 <section class="wrap" id="updates">
   <div class="updates-wrap">
     <span class="sec-label" style="text-align:center; display:block; margin-bottom:2rem;">Archive Record 005 · Signal Uplink</span>
@@ -1841,6 +1876,7 @@ footer {
 </section>
 
 <!-- ═══ FOOTER ═══ -->
+
 <footer>
   <div class="footer-brand">
     <span class="footer-title">Lost Sols</span>
@@ -1876,17 +1912,18 @@ let stars = [];
 
 function generateStars() {
   stars = [];
+  const isMobile = window.innerWidth < 768;
+  const maxSz = isMobile ? 1.8 : 3.5;
+  const minSz = isMobile ? 0.4 : 0.6;
   for (let i = 0; i < STAR_COUNT; i++) {
-    const sz = Math.random() * 2.2 + 0.6;
+    const sz = Math.random() * maxSz + minSz;
     stars.push({
       x:      Math.random() * starCanvas.width,
       y:      Math.random() * starCanvas.height,
       sz,
-      // Each star has its own base brightness and twinkle phase
-      baseA:  Math.random() * 0.4 + 0.6,   // 0.6–1.0
-      phase:  Math.random() * Math.PI * 2,   // random start in twinkle cycle
-      speed:  Math.random() * 0.4 + 0.3,    // twinkle speed
-      // occasional warm or cyan tint
+      baseA:  Math.random() * 0.4 + 0.6,
+      phase:  Math.random() * Math.PI * 2,
+      speed:  Math.random() * 0.4 + 0.3,
       r: 255,
       g: Math.random() > 0.85 ? 240 : 255,
       b: Math.random() > 0.9  ? 200 : 255,
@@ -2157,15 +2194,27 @@ async function typeLines(lines) {
     const el         = lines[i];
     const text       = el.dataset.text || '';
     const isLast     = i === lines.length - 1;
-    const showCursor = isLast && el.dataset.cursor === 'true';
+    // Show cursor on every line while typing, keep blinking on last line
+    const showCursor = el.dataset.cursor === 'true' || true;
+    const keepCursor = isLast && el.dataset.cursor === 'true';
 
-    const prevCursor = el.parentElement
-      ? el.parentElement.querySelector('.typed-cursor')
-      : null;
-    if (prevCursor) prevCursor.remove();
+    // Remove cursor from the PREVIOUS line
+    if (i > 0) {
+      const prevEl = lines[i - 1];
+      const prevCursor = prevEl.querySelector('.typed-cursor');
+      if (prevCursor) prevCursor.remove();
+    }
 
     await typeText(el, text, null, showCursor, null);
-    if (!isLast) await sleep(LINE_PAUSE);
+
+    // If not the last line, remove the cursor before moving on
+    if (!isLast) {
+      await sleep(LINE_PAUSE);
+      if (!keepCursor) {
+        const cur = el.querySelector('.typed-cursor');
+        if (cur) cur.remove();
+      }
+    }
   }
 }
 
@@ -2258,5 +2307,6 @@ navOverlay.addEventListener('click', (e) => {
   if (e.target === navOverlay) closeNav();
 });
 </script>
+
 </body>
 </html>
