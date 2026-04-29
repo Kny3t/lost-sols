@@ -374,8 +374,10 @@ nav {
   margin-right: auto;
 }
 
-.hero-boot span { display: block; margin-bottom: 0.2rem; }
-.hero-boot span:last-child { color: #00ffcc; }
+.hero-boot div { display: block; margin-bottom: 0.2rem; }
+.hero-boot div:last-child { color: #00ffcc; }
+.hero-boot span { display: inline; }
+.hero-boot .typed-cursor { display: inline-block; }
 
 .hero-eyebrow {
   font-family: 'Cinzel', 'Georgia', serif;
@@ -1446,10 +1448,10 @@ footer {
 
 ```
 <div class="hero-boot" id="hero-boot">
-  <span class="typed-line" data-text="// SAM-B BOOT SEQUENCE INITIALIZED..."></span>
-  <span class="typed-line" data-text="// ARCHIVE INTEGRITY CHECK: PARTIAL"></span>
-  <span class="typed-line" data-text="// LOADING CHRONICLE DATABASE..."></span>
-  <span class="typed-line" data-text="// RECORDS FOUND. DECRYPTING..." data-cursor="true"></span>
+  <div class="typed-line" data-text="// SAM-B BOOT SEQUENCE INITIALIZED..."></div>
+  <div class="typed-line" data-text="// ARCHIVE INTEGRITY CHECK: PARTIAL"></div>
+  <div class="typed-line" data-text="// LOADING CHRONICLE DATABASE..."></div>
+  <div class="typed-line" data-text="// RECORDS FOUND. DECRYPTING..." data-cursor="true"></div>
 </div>
 
 <p class="hero-eyebrow">A Chronicle Archive · Recovered from Telluria</p>
@@ -2157,7 +2159,8 @@ function makeCursor(extraClass) {
 function typeText(el, text, highlights, showCursor, cursorClass) {
   return new Promise(resolve => {
     el.innerHTML = '';
-    const cursor = showCursor ? makeCursor(cursorClass) : null;
+    const cursorClass2 = cursorClass ? `typed-cursor ${cursorClass}` : 'typed-cursor';
+    const cursorHTML = showCursor ? `<span class="${cursorClass2}"></span>` : '';
     let i = 0;
 
     function tick() {
@@ -2173,13 +2176,14 @@ function typeText(el, text, highlights, showCursor, cursorClass) {
           });
         }
 
-        el.innerHTML = html;
-        if (cursor) el.appendChild(cursor);
+        // Inject cursor inline within the HTML — always at the end
+        el.innerHTML = html + cursorHTML;
         i++;
         setTimeout(tick, CHAR_SPEED);
       } else {
-        if (!showCursor && cursor && cursor.parentNode) {
-          cursor.parentNode.removeChild(cursor);
+        // Typing done — remove cursor if not meant to stay
+        if (!showCursor) {
+          el.innerHTML = el.innerHTML.replace(cursorHTML, '');
         }
         resolve();
       }
@@ -2194,26 +2198,16 @@ async function typeLines(lines) {
     const el         = lines[i];
     const text       = el.dataset.text || '';
     const isLast     = i === lines.length - 1;
-    // Show cursor on every line while typing, keep blinking on last line
-    const showCursor = el.dataset.cursor === 'true' || true;
+    const showCursor = true; // show on every line while typing
     const keepCursor = isLast && el.dataset.cursor === 'true';
-
-    // Remove cursor from the PREVIOUS line
-    if (i > 0) {
-      const prevEl = lines[i - 1];
-      const prevCursor = prevEl.querySelector('.typed-cursor');
-      if (prevCursor) prevCursor.remove();
-    }
 
     await typeText(el, text, null, showCursor, null);
 
-    // If not the last line, remove the cursor before moving on
     if (!isLast) {
       await sleep(LINE_PAUSE);
-      if (!keepCursor) {
-        const cur = el.querySelector('.typed-cursor');
-        if (cur) cur.remove();
-      }
+      // Remove cursor from this line before moving to next
+      const cur = el.querySelector('.typed-cursor');
+      if (cur) cur.remove();
     }
   }
 }
