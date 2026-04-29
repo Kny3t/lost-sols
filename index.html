@@ -1336,6 +1336,24 @@ footer {
   .era-left, .era-right { padding: 0; text-align: left; }
   .era-node-col { display: none; }
   footer { flex-direction: column; padding: 2rem; text-align: center; }
+
+  /* ── MOBILE PERFORMANCE — disable expensive animations ── */
+  .artifact-scan,
+  .portrait-scan,
+  .char-scan,
+  .hero-grid { display: none; }
+
+  /* Simplify hologram on mobile */
+  .hero-title::before,
+  .hero-title::after { display: none; }
+
+  /* Reduce Sam-B cube spin cost */
+  .samb-cube { animation-duration: 12s; }
+  .overlay-samb-cube { animation-duration: 12s; }
+
+  /* Disable holo breathe on mobile */
+  .hero-title { animation: none;
+    text-shadow: 0 0 10px rgba(0,255,204,0.15); }
 }
 
 @media (max-width: 600px) {
@@ -1914,7 +1932,6 @@ let stars = [];
 
 function generateStars() {
   stars = [];
-  const isMobile = window.innerWidth < 768;
   const maxSz = isMobile ? 1.8 : 3.5;
   const minSz = isMobile ? 0.4 : 0.6;
   for (let i = 0; i < STAR_COUNT; i++) {
@@ -1933,6 +1950,8 @@ function generateStars() {
   }
 }
 
+const isMobile = window.innerWidth < 768;
+
 generateStars();
 
 function drawStars() {
@@ -1940,46 +1959,60 @@ function drawStars() {
   const t = performance.now() / 1000;
 
   stars.forEach(star => {
-    // Smooth twinkle via sine wave
     const twinkle = Math.sin(t * star.speed + star.phase);
-    const alpha   = star.baseA + twinkle * 0.2;
-    const size    = star.sz + twinkle * 0.3;
+    const alpha   = Math.max(0, Math.min(1, star.baseA + twinkle * 0.2));
+    const size    = Math.max(0.3, star.sz + twinkle * 0.2);
 
     sctx.save();
+    sctx.globalAlpha = alpha;
 
-    // Outer glow
-    const glow = sctx.createRadialGradient(
-      star.x, star.y, 0,
-      star.x, star.y, size * 5
-    );
-    glow.addColorStop(0,   `rgba(${star.r},${star.g},${star.b},${(alpha * 0.4).toFixed(3)})`);
-    glow.addColorStop(0.3, `rgba(${star.r},${star.g},${star.b},${(alpha * 0.15).toFixed(3)})`);
-    glow.addColorStop(1,   `rgba(${star.r},${star.g},${star.b},0)`);
-    sctx.beginPath();
-    sctx.arc(star.x, star.y, size * 5, 0, Math.PI * 2);
-    sctx.fillStyle = glow;
-    sctx.fill();
+    // On mobile — simple bright dot, no expensive gradients
+    // On desktop — dot with shadow glow
+    if (!isMobile && size > 1.5) {
+      sctx.shadowColor = `rgba(${star.r},${star.g},${star.b},0.8)`;
+      sctx.shadowBlur  = size * 4;
+    }
 
-    // Bright core
-    const core = sctx.createRadialGradient(
-      star.x, star.y, 0,
-      star.x, star.y, size
-    );
-    core.addColorStop(0,   `rgba(${star.r},${star.g},${star.b},${alpha.toFixed(3)})`);
-    core.addColorStop(0.5, `rgba(${star.r},${star.g},${star.b},${(alpha * 0.8).toFixed(3)})`);
-    core.addColorStop(1,   `rgba(${star.r},${star.g},${star.b},0)`);
     sctx.beginPath();
-    sctx.arc(star.x, star.y, size, 0, Math.PI * 2);
-    sctx.fillStyle = core;
+    sctx.arc(star.x, star.y, size * 0.7, 0, Math.PI * 2);
+    sctx.fillStyle = `rgb(${star.r},${star.g},${star.b})`;
     sctx.fill();
 
     sctx.restore();
   });
-
-  requestAnimationFrame(drawStars);
 }
 
-drawStars();
+function dustLoop() {
+  dctx.clearRect(0, 0, dustCanvas.width, dustCanvas.height);
+
+  decayTick++;
+  if (decayTick > 2) {
+    scrollVel *= 0.86;
+    if (scrollVel < 0.04) {
+      scrollVel = 0;
+      const dirEl = document.getElementById('vel-dir');
+      if (dirEl) {
+        dirEl.textContent = '— idle';
+        dirEl.style.color = '#00a080';
+      }
+      const velBar = document.getElementById('vel-bar');
+      if (velBar) velBar.style.width = '0%';
+    }
+  }
+
+  // Skip dust on mobile when velocity is very low — saves GPU
+  if (!isMobile || scrollVel > 0.5) {
+    flecks.forEach(f => { f.update(); f.draw(); });
+  }
+}
+
+// ── SINGLE UNIFIED ANIMATION LOOP ──
+// Called after all dependencies initialized at bottom of script
+function mainLoop() {
+  drawStars();
+  dustLoop();
+  requestAnimationFrame(mainLoop);
+}
 
 // SAM-B STATUS ROTATION
 const statuses = [
@@ -2104,34 +2137,12 @@ window.addEventListener('scroll', () => {
   const dirEl = document.getElementById('vel-dir');
   if (delta > 0) {
     dirEl.textContent = '↓ descending';
-    dirEl.style.color = '#00a080';
+    dirEl.style.color = '#00ffcc';
   } else {
     dirEl.textContent = '↑ ascending';
-    dirEl.style.color = '#e8a030';
+    dirEl.style.color = '#00ffcc';
   }
 }, { passive: true });
-
-// Dust animation loop
-function dustLoop() {
-  dctx.clearRect(0, 0, dustCanvas.width, dustCanvas.height);
-  decayTick++;
-  if (decayTick > 2) {
-    scrollVel *= 0.86;
-    if (scrollVel < 0.04) {
-      scrollVel = 0;
-      const dirEl = document.getElementById('vel-dir');
-      if (dirEl) {
-        dirEl.textContent = '— idle';
-        dirEl.style.color = '#303540';
-      }
-      document.getElementById('vel-bar').style.width = '0%';
-    }
-  }
-  flecks.forEach(f => { f.update(); f.draw(); });
-  requestAnimationFrame(dustLoop);
-}
-dustLoop();
-
 // ══════════════════════════════════════════
 // UTILITIES
 // ══════════════════════════════════════════
@@ -2270,6 +2281,7 @@ function initScrollTyping() {
 
 // Start once fonts ready
 document.fonts.ready.then(() => {
+  mainLoop();
   runBootSequence();
   initScrollTyping();
 });
