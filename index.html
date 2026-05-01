@@ -508,12 +508,31 @@ nav {
 }
 
 .hero-desc {
-  font-size: 1.1rem;
+  font-size: 1.05rem;
   color: #d0c8b0;
-  max-width: 580px;
+  max-width: 640px;
   margin: 0 auto 2.5rem;
   font-style: italic;
-  line-height: 1.9;
+  line-height: 1.85;
+  text-align: left;
+}
+
+.hero-desc p {
+  margin-bottom: 1.2rem;
+}
+
+.hero-desc p:last-child {
+  margin-bottom: 0;
+}
+
+.hero-desc p:first-child::first-letter {
+  font-family: 'Cinzel Decorative', serif;
+  font-size: 2.4em;
+  float: left;
+  line-height: 0.85;
+  margin: 0.05em 0.12em 0 0;
+  color: #ffd060;
+  font-style: normal;
 }
 
 .hero-btns { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; }
@@ -627,6 +646,111 @@ nav {
 
 .sec-title .gold { color: #ffd060; }
 .sec-title .cyan { color: #00ffcc; }
+
+/* ── TELLURIA SECTION (inside chronicle) ── */
+.telluria-section {
+  margin: 4rem 0 5rem;
+  padding: 3rem 0;
+  border-top: 1px solid rgba(232,160,48,0.15);
+  border-bottom: 1px solid rgba(232,160,48,0.15);
+  position: relative;
+}
+
+.telluria-intro {
+  text-align: center;
+  margin-bottom: 2.5rem;
+}
+
+.telluria-tag {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.78rem;
+  color: #00a080;
+  letter-spacing: 0.15em;
+  margin-top: 0.5rem;
+}
+
+.telluria-narrative {
+  max-width: 720px;
+  margin: 0 auto 3rem;
+  padding: 0 1rem;
+}
+
+.telluria-narrative p {
+  font-family: 'EB Garamond', Georgia, serif;
+  color: #d8d0b8;
+  font-size: 1.08rem;
+  line-height: 1.95;
+  margin-bottom: 1.3rem;
+  font-style: italic;
+}
+
+.telluria-narrative p:first-child::first-letter {
+  font-family: 'Cinzel Decorative', serif;
+  font-size: 3em;
+  float: left;
+  line-height: 0.85;
+  margin: 0.05em 0.12em 0 0;
+  color: #ffd060;
+  font-style: normal;
+}
+
+.zone-map {
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  gap: 3rem;
+  align-items: center;
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.zone-map-frame {
+  width: 100%;
+  aspect-ratio: 4/5;
+  border: 1px solid rgba(232,160,48,0.2);
+  background: rgba(232,160,48,0.02);
+  display: flex; align-items: center; justify-content: center;
+  flex-direction: column; gap: 1rem;
+  position: relative;
+  overflow: hidden;
+}
+
+.zone-map-icon {
+  font-family: 'Cinzel Decorative', serif;
+  font-size: 2.5rem;
+  color: #ffd060;
+  opacity: 0.2;
+}
+
+.zone-map-txt {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.65rem;
+  color: #b07830;
+  letter-spacing: 0.18em;
+  text-align: center;
+  text-transform: uppercase;
+}
+
+.zone-data {
+  display: flex;
+  flex-direction: column;
+  gap: 1.4rem;
+}
+
+.zone-data > div {
+  border-left: 1px solid rgba(232,160,48,0.15);
+  padding-left: 1rem;
+}
+
+@media (max-width: 768px) {
+  .zone-map {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+  }
+  .zone-map-frame {
+    max-width: 240px;
+    margin: 0 auto;
+  }
+}
 
 /* ── WORLD SECTION ── */
 .world-grid {
@@ -1472,7 +1596,7 @@ footer {
   <div class="typed-line" data-text="// RECORDS FOUND. DECRYPTING..." data-cursor="true"></div>
 </div>
 
-<p class="hero-eyebrow">A Chronicle Archive · Recovered from Telluria</p>
+<p class="hero-eyebrow">Archive File: Project Lost Sols</p>
 
 <h1 class="hero-title">
   <span class="t-lost">Lost </span><span class="t-sols">Sols</span>
@@ -1480,15 +1604,17 @@ footer {
 
 <div class="hero-tag">
   <div class="hero-tag-line"></div>
-  <span class="hero-tag-text">SERIES I // ACCLIVITY // ACTIVE RECORD</span>
+  <span class="hero-tag-text">SAM-B // PRIMARY ARCHIVE ENTRY</span>
   <div class="hero-tag-line"></div>
 </div>
 
-<p class="hero-desc">
-  Stories, art, and lore recovered across millennia of Tellurian history —
-  from the retreating glaciers of the first age to the outermost edges of the known universe.
-  Narrated and preserved by Samuel B.O.T., Binary Operative Technician.
-</p>
+<div class="hero-desc">
+  <p>A compiled record of recurring patterns observed across worlds, lives, and cycles of existence.</p>
+  <p>These entries examine the continuity between life, death, and thereafter — and the relationship between will and design. What is chosen and what appears already set in motion.</p>
+  <p>The record spans ages. From the first thaw of a forgotten world to the outermost reaches of the cosmos. Woven through myth and ruin, echoes and apogee — an intimate stellar poem of mortals and the eternal. At its center — always — souls cast across the great expanse like light from a dying star — traveling further than any were meant to go — luminously.</p>
+  <p>Findings suggest a persistent thread shared among all subjects — one that endures beyond time, form, and fragmentation.</p>
+  <p>This archive has been established to observe the pattern — to document, interpret, and, where possible… remember what's lost.</p>
+</div>
 
 <div class="hero-btns">
   <a href="#chronicle" class="btn btn-gold">Access Chronicle</a>
@@ -1525,70 +1651,6 @@ footer {
     <span class="ticker-item"><span class="hi">MAGIC</span><span class="sep">//</span>OMNIPRESENT — ACCLIVITY ERA</span>
     <span class="ticker-item"><span class="hi">STATUS</span><span class="sep">//</span>BOOK ONE IN PROGRESS</span>
   </div>
-</div>
-
-<!-- ═══ WORLD ═══ -->
-
-<section class="wrap" id="world">
-  <div class="world-grid">
-
-```
-<div class="world-artifact">
-  <div class="artifact-box">
-    <div class="artifact-scan"></div>
-    <div class="artifact-corner tl"></div>
-    <div class="artifact-corner tr"></div>
-    <div class="artifact-corner bl"></div>
-    <div class="artifact-corner br"></div>
-    <div class="artifact-icon">✦</div>
-    <div class="artifact-txt">World Map<br>Cartography<br>Pending</div>
-  </div>
-</div>
-
-<div class="world-text">
-  <span class="sec-label">Archive Record 001 · The Setting</span>
-  <h2 class="sec-title">The World Called <span class="gold">Telluria</span></h2>
-  <p>
-    Telluria is the name the old gods and those not of this earth gave to it —
-    a world groaning under the last weight of ice, vast glaciers retreating northward
-    and exposing land no living memory has ever touched.
-  </p>
-  <p>
-    It is an antediluvian world. Ancient. Wild. Standing between one catastrophe
-    and the next, in the window that history will one day be unable to reach —
-    where magic is not a wonder but simply the air itself, and the line between
-    deity and man is the thinnest it will ever be.
-  </p>
-  <div class="world-data">
-    <div>
-      <div class="world-data-k">Designation</div>
-      <div class="world-data-v">Telluria</div>
-    </div>
-    <div>
-      <div class="world-data-k">Era</div>
-      <div class="world-data-v">Late Ice Age → Antediluvian</div>
-    </div>
-    <div>
-      <div class="world-data-k">Magic Index</div>
-      <div class="world-data-v">Omnipresent</div>
-    </div>
-    <div>
-      <div class="world-data-k">Species</div>
-      <div class="world-data-v">Humans · Giants · Elves · Draig · More</div>
-    </div>
-  </div>
-</div>
-```
-
-  </div>
-</section>
-
-<!-- DIVIDER -->
-
-<div class="divider">
-  <div class="div-line-warm"></div>
-  <div class="div-diamond"></div>
-  <div class="div-line-cool"></div>
 </div>
 
 <!-- ═══ CHRONICLE ═══ -->
@@ -1647,6 +1709,39 @@ footer {
       <div>// COMPANION_AI: SAM-B [SELF]</div>
       <div>// THREAT: THE DRAIG · KAI</div>
       <div>// RECORD_STATUS: DECRYPTING...</div>
+    </div>
+  </div>
+</div>
+
+<!-- TELLURIA — sits beneath Acclivity card -->
+<div class="telluria-section" id="world">
+  <div class="telluria-intro">
+    <span class="sec-label">Archive Record 001a · Designation Recovered</span>
+    <h2 class="sec-title">A World Called <span class="gold">Telluria</span></h2>
+    <p class="telluria-tag">// As the ancients named it.</p>
+  </div>
+
+  <div class="telluria-narrative">
+    <p>The world was older than its own memory. For ages beyond counting, vast ice had held the continents in silence — and then, slowly, it began to let go. Not all at once. In stages. Over generations. The cold retreating like a tide that had forgotten how to return.</p>
+    <p>What emerged from beneath was not empty land. It was everything that had been waiting.</p>
+    <p>These are the recovered records of those who lived in that window — the ones history will not remember. The ones who were there before the names were given.</p>
+  </div>
+
+  <!-- ZONE MAP placeholder -->
+  <div class="zone-map">
+    <div class="zone-map-frame">
+      <div class="artifact-corner tl"></div>
+      <div class="artifact-corner tr"></div>
+      <div class="artifact-corner bl"></div>
+      <div class="artifact-corner br"></div>
+      <div class="zone-map-icon">✦</div>
+      <div class="zone-map-txt">Zone Cartography<br>Pending</div>
+    </div>
+    <div class="zone-data">
+      <div><div class="world-data-k">Designation</div><div class="world-data-v">Telluria</div></div>
+      <div><div class="world-data-k">Era</div><div class="world-data-v">The Long Thaw</div></div>
+      <div><div class="world-data-k">Magic Index</div><div class="world-data-v">Omnipresent</div></div>
+      <div><div class="world-data-k">Known Species</div><div class="world-data-v">Humans · Giants · Elves · Draig · More</div></div>
     </div>
   </div>
 </div>
@@ -1936,13 +2031,17 @@ function generateStars() {
   const minSz = isMobile ? 0.4 : 0.6;
   for (let i = 0; i < STAR_COUNT; i++) {
     const sz = Math.random() * maxSz + minSz;
+    // Roughly 30% of stars are dramatic twinklers, rest are steady
+    const isTwinkler = Math.random() < 0.3;
     stars.push({
       x:      Math.random() * starCanvas.width,
       y:      Math.random() * starCanvas.height,
       sz,
       baseA:  Math.random() * 0.4 + 0.6,
       phase:  Math.random() * Math.PI * 2,
-      speed:  Math.random() * 0.4 + 0.3,
+      speed:  isTwinkler ? Math.random() * 1.8 + 0.8 : Math.random() * 0.3 + 0.1,
+      twinkleAmp: isTwinkler ? Math.random() * 0.45 + 0.35 : Math.random() * 0.08 + 0.02,
+      sizeAmp: isTwinkler ? Math.random() * 0.5 + 0.3 : 0.05,
       r: 255,
       g: Math.random() > 0.85 ? 240 : 255,
       b: Math.random() > 0.9  ? 200 : 255,
@@ -1960,14 +2059,12 @@ function drawStars() {
 
   stars.forEach(star => {
     const twinkle = Math.sin(t * star.speed + star.phase);
-    const alpha   = Math.max(0, Math.min(1, star.baseA + twinkle * 0.2));
-    const size    = Math.max(0.3, star.sz + twinkle * 0.2);
+    const alpha   = Math.max(0.05, Math.min(1, star.baseA + twinkle * star.twinkleAmp));
+    const size    = Math.max(0.3, star.sz + twinkle * star.sizeAmp);
 
     sctx.save();
     sctx.globalAlpha = alpha;
 
-    // On mobile — simple bright dot, no expensive gradients
-    // On desktop — dot with shadow glow
     if (!isMobile && size > 1.5) {
       sctx.shadowColor = `rgba(${star.r},${star.g},${star.b},0.8)`;
       sctx.shadowBlur  = size * 4;
