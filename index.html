@@ -73,6 +73,8 @@ body {
   pointer-events: none;
   z-index: 0;
   display: block;
+  will-change: auto;
+  transform: translateZ(0);
 }
 
 /* ── SPACE DUST CANVAS ── */
@@ -1446,6 +1448,11 @@ footer {
 .typed-hi { color: #00ffcc; }
 
 /* ── RESPONSIVE ── */
+@media (max-width: 1200px) {
+  /* Hide center divider line on iPad and narrower */
+  .chronicle-track::before { display: none !important; }
+}
+
 @media (max-width: 900px) {
   .world-grid { grid-template-columns: 1fr; gap: 3rem; }
   .world-artifact { display: none; }
@@ -1595,7 +1602,7 @@ footer {
 <p class="hero-eyebrow">Archive File: Project Lost Sols</p>
 
 <video class="hero-logo" autoplay loop muted playsinline>
-  <source src="lostsols_logo_optimized.webm" type="video/webm">
+  <source src="https://raw.githubusercontent.com/Kny3t/lost-sols/main/lostsols_logo_optimized.webm" type="video/webm">
   Lost Sols
 </video>
 
