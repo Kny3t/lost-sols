@@ -68,8 +68,10 @@ body {
 /* ── STARFIELD CANVAS ── */
 #star-canvas {
   position: fixed;
-  top: 0; left: 0;
-  width: 100vw; height: 100vh;
+  top: 0 !important; 
+  left: 0 !important;
+  width: 100vw !important; 
+  height: 100vh !important;
   pointer-events: none;
   z-index: 0;
   display: block;
@@ -1601,10 +1603,17 @@ footer {
 
 <p class="hero-eyebrow">Archive File: Project Lost Sols</p>
 
-<video class="hero-logo" autoplay loop muted playsinline>
+<video class="hero-logo" autoplay loop muted playsinline crossorigin="anonymous" id="hero-video">
   <source src="lostsols_logo_optimized.webm" type="video/webm">
-  Lost Sols
+  <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==" alt="Lost Sols">
 </video>
+
+<script>
+  const heroVideo = document.getElementById('hero-video');
+  heroVideo.addEventListener('loadstart', () => console.log('Video loading started'));
+  heroVideo.addEventListener('canplay', () => console.log('Video ready to play'));
+  heroVideo.addEventListener('error', (e) => console.log('Video error:', e.target.error.message));
+</script>
 
 <div class="hero-tag">
   <div class="hero-tag-line"></div>
