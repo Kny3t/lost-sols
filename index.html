@@ -1603,17 +1603,9 @@ footer {
 
 <p class="hero-eyebrow">Archive File: Project Lost Sols</p>
 
-<video class="hero-logo" autoplay loop muted playsinline crossorigin="anonymous" id="hero-video">
-  <source src="lostsols_logo_optimized.webm" type="video/webm">
-  <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==" alt="Lost Sols">
+<video class="hero-logo" autoplay loop muted playsinline id="hero-video">
+  <source src="https://kny3t.github.io/lost-sols/lostsols_logo_optimized.webm" type="video/webm">
 </video>
-
-<script>
-  const heroVideo = document.getElementById('hero-video');
-  heroVideo.addEventListener('loadstart', () => console.log('Video loading started'));
-  heroVideo.addEventListener('canplay', () => console.log('Video ready to play'));
-  heroVideo.addEventListener('error', (e) => console.log('Video error:', e.target.error.message));
-</script>
 
 <div class="hero-tag">
   <div class="hero-tag-line"></div>
