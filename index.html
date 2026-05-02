@@ -1448,8 +1448,8 @@ footer {
 .typed-hi { color: #00ffcc; }
 
 /* ── RESPONSIVE ── */
-@media (max-width: 1200px) {
-  /* Hide center divider line on iPad and narrower */
+/* ALWAYS hide divider on iPad and smaller (max-width 1024px covers iPad landscape) */
+@media (max-width: 1024px) {
   .chronicle-track::before { display: none !important; }
 }
 
@@ -1602,7 +1602,7 @@ footer {
 <p class="hero-eyebrow">Archive File: Project Lost Sols</p>
 
 <video class="hero-logo" autoplay loop muted playsinline>
-  <source src="https://raw.githubusercontent.com/Kny3t/lost-sols/main/lostsols_logo_optimized.webm" type="video/webm">
+  <source src="lostsols_logo_optimized.webm" type="video/webm">
   Lost Sols
 </video>
 
