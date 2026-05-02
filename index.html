@@ -388,20 +388,17 @@ nav {
   margin-bottom: 1.2rem;
 }
 
+.hero-logo {
+  max-width: 900px;
+  width: 90%;
+  height: auto;
+  margin-bottom: 1.5rem;
+  display: block;
+  image-rendering: crisp-edges;
+}
+
 .hero-title {
-  font-family: 'Cinzel Decorative', 'Palatino Linotype', 'Book Antiqua', Palatino, serif;
-  font-size: clamp(3rem, 9vw, 7rem);
-  font-weight: 700;
-  line-height: 1.05;
-  margin-bottom: 0.3em;
-  position: relative;
-  white-space: nowrap;
-  text-shadow:
-    0 0 8px rgba(0,255,204,0.12),
-    0 0 2px rgba(0,255,204,0.08);
-  animation:
-    holo-breathe 4s ease-in-out infinite,
-    holo-shake 7s steps(1) infinite;
+  display: none;
 }
 
 .hero-title .t-lost { color: #f0e8d0; }
@@ -1476,8 +1473,7 @@ footer {
   .overlay-samb-cube { animation-duration: 12s; }
 
   /* Disable holo breathe on mobile */
-  .hero-title { animation: none;
-    text-shadow: 0 0 10px rgba(0,255,204,0.15); }
+  .hero-logo { max-width: 700px; }
 }
 
 @media (max-width: 600px) {
@@ -1598,9 +1594,10 @@ footer {
 
 <p class="hero-eyebrow">Archive File: Project Lost Sols</p>
 
-<h1 class="hero-title">
-  <span class="t-lost">Lost </span><span class="t-sols">Sols</span>
-</h1>
+<video class="hero-logo" autoplay loop muted playsinline>
+  <source src="lostsols_logo_optimized.webm" type="video/webm">
+  Lost Sols
+</video>
 
 <div class="hero-tag">
   <div class="hero-tag-line"></div>
