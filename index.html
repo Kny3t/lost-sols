@@ -2116,14 +2116,42 @@ function drawStars() {
     sctx.globalAlpha = alpha;
 
     if (!isMobile && size > 1.5) {
-      sctx.shadowColor = `rgba(${star.r},${star.g},${star.b},0.8)`;
-      sctx.shadowBlur  = size * 4;
-    }
-
+    // HD star: radial glow + bright core + diffraction spikes
+    const glowR = size * 5;
+    const grad = sctx.createRadialGradient(star.x, star.y, 0, star.x, star.y, glowR);
+    grad.addColorStop(0,    'rgba(' + star.r + ',' + star.g + ',' + star.b + ',' + alpha.toFixed(3) + ')');
+    grad.addColorStop(0.12, 'rgba(' + star.r + ',' + star.g + ',' + star.b + ',' + (alpha * 0.7).toFixed(3) + ')');
+    grad.addColorStop(0.4,  'rgba(' + star.r + ',' + star.g + ',' + star.b + ',' + (alpha * 0.12).toFixed(3) + ')');
+    grad.addColorStop(1,    'rgba(' + star.r + ',' + star.g + ',' + star.b + ',0)');
     sctx.beginPath();
-    sctx.arc(star.x, star.y, size * 0.7, 0, Math.PI * 2);
-    sctx.fillStyle = `rgb(${star.r},${star.g},${star.b})`;
+    sctx.arc(star.x, star.y, glowR, 0, Math.PI * 2);
+    sctx.fillStyle = grad;
     sctx.fill();
+    sctx.beginPath();
+    sctx.arc(star.x, star.y, size * 0.32, 0, Math.PI * 2);
+    sctx.fillStyle = 'rgba(255,255,255,' + Math.min(1, alpha * 1.25).toFixed(3) + ')';
+    sctx.fill();
+    if (!isMobile && size > 1.8) {
+      const spikeLen = size * 7;
+      const sa = (alpha * 0.45).toFixed(3);
+      const sb = (alpha * 0.65).toFixed(3);
+      for (let si = 0; si < 2; si++) {
+        const ang = si * Math.PI / 2;
+        const cx = Math.cos(ang), cy = Math.sin(ang);
+        const sg = sctx.createLinearGradient(star.x - spikeLen * cx, star.y - spikeLen * cy, star.x + spikeLen * cx, star.y + spikeLen * cy);
+        sg.addColorStop(0,   'rgba(' + star.r + ',' + star.g + ',' + star.b + ',0)');
+        sg.addColorStop(0.4, 'rgba(' + star.r + ',' + star.g + ',' + star.b + ',' + sa + ')');
+        sg.addColorStop(0.5, 'rgba(255,255,255,' + sb + ')');
+        sg.addColorStop(0.6, 'rgba(' + star.r + ',' + star.g + ',' + star.b + ',' + sa + ')');
+        sg.addColorStop(1,   'rgba(' + star.r + ',' + star.g + ',' + star.b + ',0)');
+        sctx.beginPath();
+        sctx.moveTo(star.x - spikeLen * cx, star.y - spikeLen * cy);
+        sctx.lineTo(star.x + spikeLen * cx, star.y + spikeLen * cy);
+        sctx.strokeStyle = sg;
+        sctx.lineWidth = 0.8;
+        sctx.stroke();
+      }
+    }
 
     sctx.restore();
   });
