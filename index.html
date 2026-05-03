@@ -399,6 +399,7 @@ nav {
   margin-bottom: 1.5rem;
   display: block;
   image-rendering: crisp-edges;
+  mix-blend-mode: screen;
 }
 
 /* ━━ HERO LOGO CSS ANIMATION ━━ */
@@ -1646,15 +1647,9 @@ footer {
 
 <p class="hero-eyebrow">Archive File: Project Lost Sols</p>
 
-<div class="hero-logo hero-logo-anim">
-  <div class="hla-glow-bg"></div>
-  <div class="hla-text">
-    <span class="hla-word hla-lost">LOST</span>
-    <span class="hla-sep">+</span>
-    <span class="hla-word hla-sols">SOLS</span>
-  </div>
-  <div class="hla-shimmer"></div>
-</div>
+<video class="hero-logo" autoplay loop muted playsinline id="hero-video">
+  <source src="Lost%20Sols%20Logo.webm" type="video/webm">
+</video>
 
 <div class="hero-tag">
   <div class="hero-tag-line"></div>
