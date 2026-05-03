@@ -401,6 +401,48 @@ nav {
   image-rendering: crisp-edges;
 }
 
+/* ━━ HERO LOGO CSS ANIMATION ━━ */
+.hero-logo-anim { position: relative; overflow: hidden; padding: 0.3rem 0; text-align: center; }
+.hla-glow-bg {
+  position: absolute; inset: 0; pointer-events: none; z-index: 1;
+  background: radial-gradient(ellipse 80% 70% at center, rgba(232,160,48,0.22) 0%, transparent 70%);
+  animation: hla-glow-breathe 5s ease-in-out 1.5s infinite;
+}
+.hla-text {
+  font-family: 'Cinzel Decorative', serif;
+  font-size: clamp(2.6rem, 8.5vw, 5.5rem);
+  font-weight: 700; letter-spacing: 0.1em;
+  position: relative; z-index: 2;
+  display: flex; align-items: center; justify-content: center; gap: 0.3em;
+}
+.hla-word {
+  background: linear-gradient(180deg, #ffe48a 0%, #ffd060 30%, #e8a030 65%, #b07030 100%);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+  opacity: 0; filter: blur(6px); transform: translateY(10px);
+}
+.hla-lost { animation: hla-word-in 1.3s cubic-bezier(0.16,1,0.3,1) 0.2s forwards, hla-breathe 5s ease-in-out 1.5s infinite; }
+.hla-sols { animation: hla-word-in 1.3s cubic-bezier(0.16,1,0.3,1) 0.5s forwards, hla-breathe 5s ease-in-out 1.8s infinite; }
+.hla-sep {
+  color: #00c8a0; -webkit-text-fill-color: #00c8a0;
+  font-weight: 300; font-size: 0.65em; opacity: 0;
+  animation: hla-sep-in 0.7s ease-out 0.35s forwards;
+  position: relative; top: -0.04em;
+}
+.hla-shimmer {
+  position: absolute; top: 0; bottom: 0; left: -80%; width: 55%;
+  background: linear-gradient(90deg, transparent, rgba(255,245,190,0.35), transparent);
+  pointer-events: none; z-index: 3;
+  animation: hla-shimmer-sweep 5s ease-in-out 2.2s infinite;
+}
+@keyframes hla-word-in { to { opacity: 1; filter: blur(0); transform: translateY(0); } }
+@keyframes hla-sep-in { from { opacity: 0; transform: scale(0.4); } to { opacity: 1; transform: scale(1); } }
+@keyframes hla-glow-breathe { 0%,100% { opacity: 0.6; } 50% { opacity: 1; } }
+@keyframes hla-breathe { 0%,100% { opacity: 1; } 50% { opacity: 0.8; } }
+@keyframes hla-shimmer-sweep {
+  0% { left: -80%; opacity: 0; } 8% { opacity: 1; }
+  65% { opacity: 1; } 90% { left: 130%; opacity: 0; } 100% { left: 130%; opacity: 0; }
+}
+
 .hero-title {
   display: none;
 }
@@ -1604,9 +1646,15 @@ footer {
 
 <p class="hero-eyebrow">Archive File: Project Lost Sols</p>
 
-<video class="hero-logo" autoplay loop muted playsinline id="hero-video">
-  <source src="lostsols%20logo.webm" type="video/webm">
-</video>
+<div class="hero-logo hero-logo-anim">
+  <div class="hla-glow-bg"></div>
+  <div class="hla-text">
+    <span class="hla-word hla-lost">LOST</span>
+    <span class="hla-sep">+</span>
+    <span class="hla-word hla-sols">SOLS</span>
+  </div>
+  <div class="hla-shimmer"></div>
+</div>
 
 <div class="hero-tag">
   <div class="hero-tag-line"></div>
@@ -2090,7 +2138,7 @@ function dustLoop() {
   dctx.clearRect(0, 0, dustCanvas.width, dustCanvas.height);
 
   decayTick++;
-  if (decayTick > 2) {
+  if (decayTick > 20) {
     scrollVel *= 0.86;
     if (scrollVel < 0.04) {
       scrollVel = 0;
