@@ -2022,7 +2022,7 @@ const sctx = starCanvas.getContext('2d');
 
 function resizeStars() {
   starCanvas.width  = window.innerWidth;
-  starCanvas.height = window.innerHeight;
+  starCanvas.height = Math.max(window.innerHeight, window.screen.height || window.innerHeight);
 }
 resizeStars();
 let _rW = window.innerWidth;
@@ -2097,7 +2097,7 @@ function dustLoop() {
       const dirEl = document.getElementById('vel-dir');
       if (dirEl) {
         dirEl.textContent = '— idle';
-        dirEl.style.color = '#4488ff';
+        dirEl.style.color = '#00c8a0';
       }
       const velBar = document.getElementById('vel-bar');
       if (velBar) velBar.style.width = '0%';
