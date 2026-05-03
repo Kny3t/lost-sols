@@ -2115,7 +2115,6 @@ function drawStars() {
     sctx.save();
     sctx.globalAlpha = alpha;
 
-    if (!isMobile && size > 1.5) {
     // HD star: radial glow + bright core + diffraction spikes
     const glowR = size * 5;
     const grad = sctx.createRadialGradient(star.x, star.y, 0, star.x, star.y, glowR);
