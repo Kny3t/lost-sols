@@ -15,25 +15,25 @@ document.fonts.ready.then(function() {
 });
 
 // FontFace API fallback - explicitly load Cinzel Decorative
-if (‘FontFace’ in window) {
-const cinzelDec = new FontFace(‘Cinzel Decorative’,
-‘url(https://fonts.gstatic.com/s/cinzeldecorative/v16/daaHSScvJGqLYhG8nNt8KPaJvgP65gPBSg.woff2) format(“woff2”)’,
-{ weight: ‘400’ }
+if ('FontFace' in window) {
+const cinzelDec = new FontFace('Cinzel Decorative',
+'url(https://fonts.gstatic.com/s/cinzeldecorative/v16/daaHSScvJGqLYhG8nNt8KPaJvgP65gPBSg.woff2) format("woff2")',
+{ weight: '400' }
 );
-const cinzelDecBold = new FontFace(‘Cinzel Decorative’,
-‘url(https://fonts.gstatic.com/s/cinzeldecorative/v16/daaCSScvJGqLYhG8nNt8KPaJvgP-aSWqMvI.woff2) format(“woff2”)’,
-{ weight: ‘700’ }
+const cinzelDecBold = new FontFace('Cinzel Decorative',
+'url(https://fonts.gstatic.com/s/cinzeldecorative/v16/daaCSScvJGqLYhG8nNt8KPaJvgP-aSWqMvI.woff2) format("woff2")',
+{ weight: '700' }
 );
 Promise.all([cinzelDec.load(), cinzelDecBold.load()]).then(function(fonts) {
 fonts.forEach(f => document.fonts.add(f));
-document.body.classList.add(‘fonts-loaded’);
+document.body.classList.add('fonts-loaded');
 // Force repaint of title elements
-document.querySelectorAll(’.hero-title, .nav-title, .sec-title, .era-name, .footer-title, .updates-title’).forEach(el => {
-el.style.opacity = ‘0.99’;
-setTimeout(() => el.style.opacity = ‘1’, 50);
+document.querySelectorAll('.hero-title, .nav-title, .sec-title, .era-name, .footer-title, .updates-title').forEach(el => {
+el.style.opacity = '0.99';
+setTimeout(() => el.style.opacity = '1', 50);
 });
 }).catch(function(err) {
-console.log(‘Font load failed, using fallback:’, err);
+console.log('Font load failed, using fallback:', err);
 });
 }
 </script>
