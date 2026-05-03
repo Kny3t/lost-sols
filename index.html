@@ -103,7 +103,7 @@ body {
 .vel-label {
   font-family: 'Share Tech Mono', monospace;
   font-size: 0.55rem;
-  color: #303540;
+  color: #ffd060;
   letter-spacing: 0.12em;
   text-transform: uppercase;
 }
@@ -931,6 +931,7 @@ nav {
 .chronicle-track { position: relative; }
 
 .chronicle-track::before {
+  display: none !important;
   content: '';
   position: absolute;
   left: 50%; top: 0; bottom: 0;
@@ -1604,7 +1605,7 @@ footer {
 <p class="hero-eyebrow">Archive File: Project Lost Sols</p>
 
 <video class="hero-logo" autoplay loop muted playsinline id="hero-video">
-  <source src="lostsols%20logo%20optimized.webm" type="video/webm">
+  <source src="lostsols%20logo.webm" type="video/webm">
 </video>
 
 <div class="hero-tag">
@@ -2024,7 +2025,8 @@ function resizeStars() {
   starCanvas.height = window.innerHeight;
 }
 resizeStars();
-window.addEventListener('resize', () => { resizeStars(); drawStars(); });
+let _rW = window.innerWidth;
+window.addEventListener('resize', () => { if (window.innerWidth !== _rW) { _rW = window.innerWidth; resizeStars(); } drawStars(); });
 
 // Generate star data
 const STAR_COUNT = 380;
@@ -2095,7 +2097,7 @@ function dustLoop() {
       const dirEl = document.getElementById('vel-dir');
       if (dirEl) {
         dirEl.textContent = '— idle';
-        dirEl.style.color = '#00a080';
+        dirEl.style.color = '#4488ff';
       }
       const velBar = document.getElementById('vel-bar');
       if (velBar) velBar.style.width = '0%';
@@ -2242,7 +2244,7 @@ window.addEventListener('scroll', () => {
     dirEl.style.color = '#ff4444';
   } else {
     dirEl.textContent = '↑ ascending';
-    dirEl.style.color = '#ffd060';
+    dirEl.style.color = '#22cc66';
   }
 }, { passive: true });
 // ══════════════════════════════════════════
