@@ -15,25 +15,25 @@ document.fonts.ready.then(function() {
 });
 
 // FontFace API fallback - explicitly load Cinzel Decorative
-if ('FontFace' in window) {
-const cinzelDec = new FontFace('Cinzel Decorative',
-'url(https://fonts.gstatic.com/s/cinzeldecorative/v16/daaHSScvJGqLYhG8nNt8KPaJvgP65gPBSg.woff2) format("woff2")',
-{ weight: '400' }
+if (‘FontFace’ in window) {
+const cinzelDec = new FontFace(‘Cinzel Decorative’,
+‘url(https://fonts.gstatic.com/s/cinzeldecorative/v16/daaHSScvJGqLYhG8nNt8KPaJvgP65gPBSg.woff2) format(“woff2”)’,
+{ weight: ‘400’ }
 );
-const cinzelDecBold = new FontFace('Cinzel Decorative',
-'url(https://fonts.gstatic.com/s/cinzeldecorative/v16/daaCSScvJGqLYhG8nNt8KPaJvgP-aSWqMvI.woff2) format("woff2")',
-{ weight: '700' }
+const cinzelDecBold = new FontFace(‘Cinzel Decorative’,
+‘url(https://fonts.gstatic.com/s/cinzeldecorative/v16/daaCSScvJGqLYhG8nNt8KPaJvgP-aSWqMvI.woff2) format(“woff2”)’,
+{ weight: ‘700’ }
 );
 Promise.all([cinzelDec.load(), cinzelDecBold.load()]).then(function(fonts) {
 fonts.forEach(f => document.fonts.add(f));
-document.body.classList.add('fonts-loaded');
+document.body.classList.add(‘fonts-loaded’);
 // Force repaint of title elements
-document.querySelectorAll('.hero-title, .nav-title, .sec-title, .era-name, .footer-title, .updates-title').forEach(el => {
-el.style.opacity = '0.99';
-setTimeout(() => el.style.opacity = '1', 50);
+document.querySelectorAll(’.hero-title, .nav-title, .sec-title, .era-name, .footer-title, .updates-title’).forEach(el => {
+el.style.opacity = ‘0.99’;
+setTimeout(() => el.style.opacity = ‘1’, 50);
 });
 }).catch(function(err) {
-console.log('Font load failed, using fallback:', err);
+console.log(‘Font load failed, using fallback:’, err);
 });
 }
 </script>
@@ -73,7 +73,7 @@ body {
   width: 100vw !important; 
   height: 100vh !important;
   pointer-events: none;
-  z-index: 2;
+  z-index: 0;
   display: block;
   will-change: auto;
   transform: translateZ(0);
@@ -103,7 +103,7 @@ body {
 .vel-label {
   font-family: 'Share Tech Mono', monospace;
   font-size: 0.55rem;
-  color: #ffd060;
+  color: #303540;
   letter-spacing: 0.12em;
   text-transform: uppercase;
 }
@@ -393,55 +393,12 @@ nav {
 }
 
 .hero-logo {
-  max-width: 900px;
-  width: 90%;
+  max-width: 1200px;
+  width: 95%;
   height: auto;
-  margin-bottom: 1.5rem;
+  margin-bottom: 2rem;
   display: block;
   image-rendering: crisp-edges;
-  mix-blend-mode: screen;
-}
-
-/* ━━ HERO LOGO CSS ANIMATION ━━ */
-.hero-logo-anim { position: relative; overflow: hidden; padding: 0.3rem 0; text-align: center; }
-.hla-glow-bg {
-  position: absolute; inset: 0; pointer-events: none; z-index: 1;
-  background: radial-gradient(ellipse 80% 70% at center, rgba(232,160,48,0.22) 0%, transparent 70%);
-  animation: hla-glow-breathe 5s ease-in-out 1.5s infinite;
-}
-.hla-text {
-  font-family: 'Cinzel Decorative', serif;
-  font-size: clamp(2.6rem, 8.5vw, 5.5rem);
-  font-weight: 700; letter-spacing: 0.1em;
-  position: relative; z-index: 2;
-  display: flex; align-items: center; justify-content: center; gap: 0.3em;
-}
-.hla-word {
-  background: linear-gradient(180deg, #ffe48a 0%, #ffd060 30%, #e8a030 65%, #b07030 100%);
-  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
-  opacity: 0; filter: blur(6px); transform: translateY(10px);
-}
-.hla-lost { animation: hla-word-in 1.3s cubic-bezier(0.16,1,0.3,1) 0.2s forwards, hla-breathe 5s ease-in-out 1.5s infinite; }
-.hla-sols { animation: hla-word-in 1.3s cubic-bezier(0.16,1,0.3,1) 0.5s forwards, hla-breathe 5s ease-in-out 1.8s infinite; }
-.hla-sep {
-  color: #00c8a0; -webkit-text-fill-color: #00c8a0;
-  font-weight: 300; font-size: 0.65em; opacity: 0;
-  animation: hla-sep-in 0.7s ease-out 0.35s forwards;
-  position: relative; top: -0.04em;
-}
-.hla-shimmer {
-  position: absolute; top: 0; bottom: 0; left: -80%; width: 55%;
-  background: linear-gradient(90deg, transparent, rgba(255,245,190,0.35), transparent);
-  pointer-events: none; z-index: 3;
-  animation: hla-shimmer-sweep 5s ease-in-out 2.2s infinite;
-}
-@keyframes hla-word-in { to { opacity: 1; filter: blur(0); transform: translateY(0); } }
-@keyframes hla-sep-in { from { opacity: 0; transform: scale(0.4); } to { opacity: 1; transform: scale(1); } }
-@keyframes hla-glow-breathe { 0%,100% { opacity: 0.6; } 50% { opacity: 1; } }
-@keyframes hla-breathe { 0%,100% { opacity: 1; } 50% { opacity: 0.8; } }
-@keyframes hla-shimmer-sweep {
-  0% { left: -80%; opacity: 0; } 8% { opacity: 1; }
-  65% { opacity: 1; } 90% { left: 130%; opacity: 0; } 100% { left: 130%; opacity: 0; }
 }
 
 .hero-title {
@@ -974,7 +931,6 @@ nav {
 .chronicle-track { position: relative; }
 
 .chronicle-track::before {
-  display: none !important;
   content: '';
   position: absolute;
   left: 50%; top: 0; bottom: 0;
@@ -1526,7 +1482,7 @@ footer {
   .overlay-samb-cube { animation-duration: 12s; }
 
   /* Disable holo breathe on mobile */
-  .hero-logo { max-width: 700px; }
+  .hero-logo { max-width: 900px; width: 95%; }
 }
 
 @media (max-width: 600px) {
@@ -1648,7 +1604,7 @@ footer {
 <p class="hero-eyebrow">Archive File: Project Lost Sols</p>
 
 <video class="hero-logo" autoplay loop muted playsinline id="hero-video">
-  <source src="LS_Logo.webm" type="video/webm">
+  <source src="https://kny3t.github.io/lost-sols/LS_Logo.webm" type="video/webm">
 </video>
 
 <div class="hero-tag">
@@ -2065,11 +2021,10 @@ const sctx = starCanvas.getContext('2d');
 
 function resizeStars() {
   starCanvas.width  = window.innerWidth;
-  starCanvas.height = Math.max(window.innerHeight, window.screen.height || window.innerHeight);
+  starCanvas.height = window.innerHeight;
 }
 resizeStars();
-let _rW = window.innerWidth;
-window.addEventListener('resize', () => { if (window.innerWidth !== _rW) { _rW = window.innerWidth; resizeStars(); } drawStars(); });
+window.addEventListener('resize', () => { resizeStars(); generateStars(); drawStars(); });
 
 // Generate star data
 const STAR_COUNT = 380;
@@ -2115,32 +2070,16 @@ function drawStars() {
     sctx.save();
     sctx.globalAlpha = alpha;
 
-    // Realistic star: shadowBlur glow + bright core
-    sctx.shadowColor = 'rgb(' + star.r + ',' + star.g + ',' + star.b + ')';
-    sctx.shadowBlur = size * 3;
-    sctx.beginPath();
-    sctx.arc(star.x, star.y, Math.max(0.3, size * 0.4), 0, Math.PI * 2);
-    sctx.fillStyle = 'white';
-    sctx.fill();
-    if (!isMobile && size > 2.2 && alpha > 0.65) {
-      sctx.shadowBlur = 0;
-      const spikeLen = size * 4;
-      const sa = (alpha * 0.25).toFixed(2);
-      for (let si = 0; si < 2; si++) {
-        const ang = si * Math.PI / 2;
-        const cx = Math.cos(ang), cy = Math.sin(ang);
-        const sg = sctx.createLinearGradient(star.x - spikeLen * cx, star.y - spikeLen * cy, star.x + spikeLen * cx, star.y + spikeLen * cy);
-        sg.addColorStop(0, 'rgba(255,255,255,0)');
-        sg.addColorStop(0.5, 'rgba(255,255,255,' + sa + ')');
-        sg.addColorStop(1, 'rgba(255,255,255,0)');
-        sctx.beginPath();
-        sctx.moveTo(star.x - spikeLen * cx, star.y - spikeLen * cy);
-        sctx.lineTo(star.x + spikeLen * cx, star.y + spikeLen * cy);
-        sctx.strokeStyle = sg;
-        sctx.lineWidth = 0.5;
-        sctx.stroke();
-      }
+    if (!isMobile && size > 1.5) {
+      sctx.shadowColor = `rgba(${star.r},${star.g},${star.b},0.8)`;
+      sctx.shadowBlur  = size * 4;
     }
+
+    sctx.beginPath();
+    sctx.arc(star.x, star.y, size * 0.7, 0, Math.PI * 2);
+    sctx.fillStyle = `rgb(${star.r},${star.g},${star.b})`;
+    sctx.fill();
+
     sctx.restore();
   });
 }
@@ -2149,14 +2088,14 @@ function dustLoop() {
   dctx.clearRect(0, 0, dustCanvas.width, dustCanvas.height);
 
   decayTick++;
-  if (decayTick > 20) {
+  if (decayTick > 2) {
     scrollVel *= 0.86;
     if (scrollVel < 0.04) {
       scrollVel = 0;
       const dirEl = document.getElementById('vel-dir');
       if (dirEl) {
         dirEl.textContent = '— idle';
-        dirEl.style.color = '#00c8a0';
+        dirEl.style.color = '#00a080';
       }
       const velBar = document.getElementById('vel-bar');
       if (velBar) velBar.style.width = '0%';
@@ -2303,7 +2242,7 @@ window.addEventListener('scroll', () => {
     dirEl.style.color = '#ff4444';
   } else {
     dirEl.textContent = '↑ ascending';
-    dirEl.style.color = '#22cc66';
+    dirEl.style.color = '#ffd060';
   }
 }, { passive: true });
 // ══════════════════════════════════════════
