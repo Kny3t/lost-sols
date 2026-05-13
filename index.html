@@ -1603,27 +1603,7 @@ footer {
 
 <p class="hero-eyebrow">Archive File: Project Lost Sols</p>
 
-<video class="hero-logo" autoplay loop muted playsinline id="hero-video">
-  <source src="https://kny3t.github.io/lost-sols/LS_Logo_MOV.mov" type='video/mp4; codecs="hvc1"'>
-  <source src="https://kny3t.github.io/lost-sols/LS_Logo.webm" type="video/webm">
-  <img src="https://kny3t.github.io/lost-sols/LS_Logo_APNG.apng" class="hero-logo" alt="Lost Sols Logo">
-</video>
-<script>
-  (function() {
-    var isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) ||
-                (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
-    if (isIOS) {
-      var v = document.getElementById('hero-video');
-      if (v) {
-        var img = document.createElement('img');
-        img.src = 'https://kny3t.github.io/lost-sols/LS_Logo_APNG.apng';
-        img.className = v.className;
-        img.alt = 'Lost Sols Logo';
-        v.parentNode.replaceChild(img, v);
-      }
-    }
-  })();
-</script>
+<img src="https://kny3t.github.io/lost-sols/LS_Logo_APNG_2.apng" class="hero-logo" id="hero-video" alt="Lost Sols Logo">
 
 <div class="hero-tag">
   <div class="hero-tag-line"></div>
