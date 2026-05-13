@@ -1608,6 +1608,22 @@ footer {
   <source src="https://kny3t.github.io/lost-sols/LS_Logo.webm" type="video/webm">
   <img src="https://kny3t.github.io/lost-sols/LS_Logo_APNG.apng" class="hero-logo" alt="Lost Sols Logo">
 </video>
+<script>
+  (function() {
+    var isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) ||
+                (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+    if (isIOS) {
+      var v = document.getElementById('hero-video');
+      if (v) {
+        var img = document.createElement('img');
+        img.src = 'https://kny3t.github.io/lost-sols/LS_Logo_APNG.apng';
+        img.className = v.className;
+        img.alt = 'Lost Sols Logo';
+        v.parentNode.replaceChild(img, v);
+      }
+    }
+  })();
+</script>
 
 <div class="hero-tag">
   <div class="hero-tag-line"></div>
