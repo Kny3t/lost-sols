@@ -1,1 +1,2419 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lost Sols — SAM-B Chronicle Archive</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&family=Cinzel:wght@400;500;600&family=EB+Garamond:ital,wght@0,400;0,500;1,400;1,500&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<script>
+// Force fonts to load before page renders
+document.fonts.ready.then(function() {
+  document.body.classList.add('fonts-loaded');
+});
+
+// FontFace API fallback - explicitly load Cinzel Decorative
+if (‘FontFace’ in window) {
+const cinzelDec = new FontFace(‘Cinzel Decorative’,
+‘url(https://fonts.gstatic.com/s/cinzeldecorative/v16/daaHSScvJGqLYhG8nNt8KPaJvgP65gPBSg.woff2) format(“woff2”)’,
+{ weight: ‘400’ }
+);
+const cinzelDecBold = new FontFace(‘Cinzel Decorative’,
+‘url(https://fonts.gstatic.com/s/cinzeldecorative/v16/daaCSScvJGqLYhG8nNt8KPaJvgP-aSWqMvI.woff2) format(“woff2”)’,
+{ weight: ‘700’ }
+);
+Promise.all([cinzelDec.load(), cinzelDecBold.load()]).then(function(fonts) {
+fonts.forEach(f => document.fonts.add(f));
+document.body.classList.add(‘fonts-loaded’);
+// Force repaint of title elements
+document.querySelectorAll(’.hero-title, .nav-title, .sec-title, .era-name, .footer-title, .updates-title’).forEach(el => {
+el.style.opacity = ‘0.99’;
+setTimeout(() => el.style.opacity = ‘1’, 50);
+});
+}).catch(function(err) {
+console.log(‘Font load failed, using fallback:’, err);
+});
+}
+</script>
+
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { scroll-behavior: smooth; }
+
+/* Font loading state */
+.hero-title, .nav-title, .sec-title,
+.era-name, .footer-title, .updates-title {
+  transition: opacity 0.3s ease;
+}
+
+/* Once fonts confirmed loaded, ensure repaint */
+.fonts-loaded .hero-title,
+.fonts-loaded .nav-title {
+  font-family: 'Cinzel Decorative', 'Palatino Linotype', serif;
+}
+
+body {
+  background-color: #000000;
+  color: #f0e8d0;
+  font-family: 'EB Garamond', Georgia, serif;
+  font-size: 20px;
+  line-height: 1.8;
+  overflow-x: hidden;
+}
+
+/* ── STARFIELD ── */
+/* ── STARFIELD CANVAS ── */
+#star-canvas {
+  position: fixed;
+  top: 0 !important; 
+  left: 0 !important;
+  width: 100vw !important; 
+  height: 100vh !important;
+  pointer-events: none;
+  z-index: 0;
+  display: block;
+  will-change: auto;
+  transform: translateZ(0);
+}
+
+/* ── SPACE DUST CANVAS ── */
+#dust-canvas {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100vw;
+  height: 100vh;
+  pointer-events: none;
+  z-index: 1;
+  display: block;
+}
+
+/* ── VELOCITY HUD ── */
+.vel-hud {
+  position: fixed;
+  bottom: 0.8rem; right: 1.5rem;
+  z-index: 200;
+  display: flex; flex-direction: column;
+  align-items: flex-end;
+  gap: 0.3rem;
+}
+
+.vel-label {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.55rem;
+  color: #303540;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.vel-bar-wrap {
+  width: 48px; height: 1px;
+  background: #0a0f10;
+}
+
+.vel-bar {
+  height: 100%;
+  background: #00ffcc;
+  width: 0%;
+  transition: width 0.08s;
+}
+
+.vel-dir {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.52rem;
+  color: #303540;
+  letter-spacing: 0.1em;
+  transition: color 0.3s;
+}
+
+/* ── NAV ── */
+nav {
+  position: fixed; top: 0; left: 0; right: 0;
+  z-index: 100;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 1.2rem 3rem;
+  background: linear-gradient(to bottom, rgba(0,0,0,0.97) 0%, transparent 100%);
+  border-bottom: 1px solid rgba(0,255,204,0.1);
+}
+
+.nav-brand { display: flex; flex-direction: column; gap: 0.15rem; text-decoration: none; }
+
+.nav-title {
+  font-family: 'Cinzel Decorative', 'Palatino Linotype', 'Book Antiqua', Palatino, serif;
+  font-size: 1.2rem;
+  letter-spacing: 0.1em;
+  color: #ffd060;
+  line-height: 1;
+}
+
+.nav-sub {
+  font-family: 'Share Tech Mono', 'Courier New', monospace;
+  font-size: 0.72rem;
+  color: #00c8a0;
+  letter-spacing: 0.12em;
+}
+
+.nav-links { display: flex; gap: 2rem; list-style: none; }
+
+.nav-links a {
+  font-family: 'Cinzel', 'Georgia', serif;
+  font-size: 0.85rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: #d0c8b0;
+  text-decoration: none;
+  transition: color 0.3s;
+}
+
+.nav-links a:hover { color: #00ffcc; }
+
+/* ── SAM-B CUBE TRIGGER ── */
+.samb-trigger {
+  display: none;
+  cursor: pointer;
+  width: 38px; height: 38px;
+  position: relative;
+  z-index: 201;
+  transition: transform 0.4s;
+  flex-shrink: 0;
+}
+
+.samb-trigger.open { transform: rotate(45deg); }
+.samb-trigger svg { width: 100%; height: 100%; }
+
+/* ── FULL SCREEN NAV OVERLAY ── */
+.nav-overlay {
+  position: fixed; inset: 0;
+  z-index: 200;
+  background: rgba(0,0,0,0.97);
+  background-image: repeating-linear-gradient(
+    0deg,
+    transparent 0px,
+    transparent 3px,
+    rgba(0,255,204,0.02) 3px,
+    rgba(0,255,204,0.02) 4px
+  );
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.4s ease;
+}
+
+.nav-overlay.open {
+  opacity: 1;
+  pointer-events: all;
+}
+
+.overlay-status {
+  position: absolute;
+  top: 5rem; left: 0; right: 0;
+  text-align: center;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.65rem;
+  color: #00a080;
+  letter-spacing: 0.2em;
+  opacity: 0;
+  transform: translateY(-10px);
+  transition: all 0.4s ease 0.1s;
+}
+
+.nav-overlay.open .overlay-status { opacity: 1; transform: translateY(0); }
+
+.overlay-links {
+  list-style: none;
+  display: flex; flex-direction: column;
+  align-items: center;
+  width: 100%;
+}
+
+.overlay-links li {
+  width: 100%;
+  text-align: center;
+  border-bottom: 1px solid rgba(0,255,204,0.06);
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.4s ease, transform 0.4s ease;
+}
+
+.overlay-links li:first-child { border-top: 1px solid rgba(0,255,204,0.06); }
+
+.nav-overlay.open .overlay-links li:nth-child(1) { opacity:1; transform:translateY(0); transition-delay:0.15s; }
+.nav-overlay.open .overlay-links li:nth-child(2) { opacity:1; transform:translateY(0); transition-delay:0.22s; }
+.nav-overlay.open .overlay-links li:nth-child(3) { opacity:1; transform:translateY(0); transition-delay:0.29s; }
+.nav-overlay.open .overlay-links li:nth-child(4) { opacity:1; transform:translateY(0); transition-delay:0.36s; }
+.nav-overlay.open .overlay-links li:nth-child(5) { opacity:1; transform:translateY(0); transition-delay:0.43s; }
+
+.overlay-links a {
+  display: flex; align-items: center; justify-content: center;
+  gap: 1.2rem;
+  padding: 1.6rem 2rem;
+  text-decoration: none;
+  font-family: 'Cinzel', serif;
+  font-size: 1.3rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: #d0c8b0;
+  transition: color 0.3s, background 0.3s;
+}
+
+.overlay-links a:hover,
+.overlay-links a:active {
+  color: #00ffcc;
+  background: rgba(0,255,204,0.04);
+}
+
+.overlay-links a::before {
+  content: attr(data-index);
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.6rem;
+  color: #00a080;
+  letter-spacing: 0.1em;
+  opacity: 0.6;
+  min-width: 30px;
+  text-align: right;
+}
+
+.overlay-links a::after {
+  content: '→';
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.8rem;
+  color: #00ffcc;
+  opacity: 0;
+  transform: translateX(-8px);
+  transition: opacity 0.3s, transform 0.3s;
+}
+
+.overlay-links a:hover::after {
+  opacity: 0.6;
+  transform: translateX(0);
+}
+
+.overlay-bottom {
+  position: absolute;
+  bottom: 4rem; left: 0; right: 0;
+  text-align: center;
+  opacity: 0;
+  transform: translateY(10px);
+  transition: all 0.4s ease 0.5s;
+}
+
+.nav-overlay.open .overlay-bottom { opacity: 1; transform: translateY(0); }
+
+.overlay-samb {
+  display: flex; flex-direction: column;
+  align-items: center; gap: 0.5rem;
+}
+
+.overlay-samb-cube {
+  width: 28px; height: 28px;
+  animation: spin 6s linear infinite;
+}
+
+.overlay-samb-text {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.55rem;
+  color: #303540;
+  letter-spacing: 0.15em;
+}
+
+.overlay-close {
+  position: absolute;
+  top: 1.4rem; right: 1.5rem;
+  width: 38px; height: 38px;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  color: #00a080;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 1.2rem;
+  border: 1px solid rgba(0,255,204,0.2);
+  opacity: 0;
+  transition: opacity 0.3s ease 0.2s, color 0.3s, border-color 0.3s;
+}
+
+.overlay-close:hover { color: #00ffcc; border-color: rgba(0,255,204,0.5); }
+.nav-overlay.open .overlay-close { opacity: 1; }
+
+/* ── RESPONSIVE ── */
+@media (max-width: 900px) {
+  nav { padding: 1rem 1.5rem; }
+  .nav-links { display: none; }
+  .samb-trigger { display: block; }
+}
+
+/* ── HERO ── */
+.hero {
+  min-height: 100vh;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  position: relative;
+  padding: 7rem 2rem 5rem;
+  text-align: center;
+  z-index: 1;
+}
+
+.hero-grid {
+  position: absolute; inset: 0;
+  background-image:
+    linear-gradient(rgba(0,255,204,0.025) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0,255,204,0.025) 1px, transparent 1px);
+  background-size: 60px 60px;
+  mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, black 20%, transparent 100%);
+  pointer-events: none;
+}
+
+.hero-inner { position: relative; z-index: 2; max-width: 860px; width: 100%; }
+
+.hero-boot {
+  font-family: 'Share Tech Mono', 'Courier New', monospace;
+  font-size: 0.82rem;
+  color: #00c8a0;
+  letter-spacing: 0.08em;
+  margin-bottom: 2.5rem;
+  text-align: left;
+  max-width: 440px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.hero-boot div { display: block; margin-bottom: 0.2rem; }
+.hero-boot div:last-child { color: #00ffcc; }
+.hero-boot span { display: inline; }
+.hero-boot .typed-cursor { display: inline-block; }
+
+.hero-eyebrow {
+  font-family: 'Cinzel', 'Georgia', serif;
+  font-size: 0.85rem;
+  letter-spacing: 0.35em;
+  text-transform: uppercase;
+  color: #00c8a0;
+  margin-bottom: 1.2rem;
+}
+
+.hero-logo {
+  max-width: 1200px;
+  width: 95%;
+  height: auto;
+  margin-bottom: 2rem;
+  display: block;
+  image-rendering: crisp-edges;
+}
+
+.hero-title {
+  display: none;
+}
+
+.hero-title .t-lost { color: #f0e8d0; }
+.hero-title .t-sols { color: #f0e8d0; }
+
+/* ── HOLOGRAM WAVE SWEEP ── */
+.hero-title::before {
+  content: 'Lost Sols';
+  position: absolute; inset: 0;
+  font-family: inherit; font-size: inherit; font-weight: inherit;
+  color: #00ffcc;
+  clip-path: polygon(0 0%, 100% 0%, 100% 0%, 0 0%);
+  animation: holo-sweep 7s ease-in-out infinite;
+  pointer-events: none;
+}
+
+/* ── HOLOGRAM GLITCH BURST ── */
+.hero-title::after {
+  content: 'Lost Sols';
+  position: absolute; inset: 0;
+  font-family: inherit; font-size: inherit; font-weight: inherit;
+  color: #00ffcc;
+  opacity: 0;
+  animation: holo-glitch 7s steps(1) infinite;
+  pointer-events: none;
+}
+
+@keyframes holo-breathe {
+  0%, 100% {
+    text-shadow: 0 0 8px rgba(0,255,204,0.12), 0 0 2px rgba(0,255,204,0.08);
+  }
+  50% {
+    text-shadow: 0 0 16px rgba(0,255,204,0.22), 0 0 4px rgba(0,255,204,0.3), 0 0 1px #00ffcc;
+  }
+}
+
+@keyframes holo-sweep {
+  0%   { clip-path: polygon(0 0%,   100% 0%,   100% 0%,   0 0%);   opacity: 0; }
+  5%   { opacity: 0; }
+  10%  { clip-path: polygon(0 0%,   100% 0%,   100% 3%,   0 3%);   opacity: 0.7; }
+  20%  { clip-path: polygon(0 18%,  100% 18%,  100% 22%,  0 22%);  opacity: 0.6; }
+  30%  { clip-path: polygon(0 38%,  100% 38%,  100% 42%,  0 42%);  opacity: 0.7; }
+  40%  { clip-path: polygon(0 55%,  100% 55%,  100% 60%,  0 60%);  opacity: 0.5; }
+  50%  { clip-path: polygon(0 72%,  100% 72%,  100% 77%,  0 77%);  opacity: 0.6; }
+  58%  { clip-path: polygon(0 95%,  100% 95%,  100% 100%, 0 100%); opacity: 0.4; }
+  60%  { clip-path: polygon(0 100%, 100% 100%, 100% 100%, 0 100%); opacity: 0; }
+  65%  { clip-path: polygon(0 5%,   100% 5%,   100% 8%,   0 8%);   opacity: 0.9; }
+  66%  { clip-path: polygon(0 30%,  100% 30%,  100% 33%,  0 33%);  opacity: 0.8; }
+  67%  { clip-path: polygon(0 55%,  100% 55%,  100% 58%,  0 58%);  opacity: 0.9; }
+  68%  { clip-path: polygon(0 80%,  100% 80%,  100% 83%,  0 83%);  opacity: 0.7; }
+  69%  { clip-path: polygon(0 100%, 100% 100%, 100% 100%, 0 100%); opacity: 0; }
+  100% { clip-path: polygon(0 100%, 100% 100%, 100% 100%, 0 100%); opacity: 0; }
+}
+
+@keyframes holo-glitch {
+  0%,  62%, 100% { opacity: 0; transform: translate(0) skew(0); clip-path: none; filter: none; }
+  63%  { opacity: 1; transform: translate(-4px, 0) skew(-1deg);
+         clip-path: polygon(0 0, 100% 0, 100% 40%, 0 40%);
+         filter: brightness(2) blur(0.5px); }
+  64%  { opacity: 0.8; transform: translate(5px, 0) skew(0.5deg);
+         clip-path: polygon(0 45%, 100% 45%, 100% 80%, 0 80%);
+         filter: brightness(1.5); }
+  65%  { opacity: 1; transform: translate(-3px, 1px) skew(-0.5deg);
+         clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%);
+         filter: brightness(3) blur(0.3px); }
+  66%  { opacity: 0.6; transform: translate(4px, -1px);
+         clip-path: polygon(0 20%, 100% 20%, 100% 65%, 0 65%);
+         filter: brightness(1.8); }
+  67%  { opacity: 0; transform: translate(0); filter: none; clip-path: none; }
+  70%  { opacity: 0.4; transform: translate(-2px, 0);
+         clip-path: polygon(0 35%, 100% 35%, 100% 55%, 0 55%);
+         filter: brightness(1.5); }
+  71%  { opacity: 0; }
+  74%  { opacity: 0.3; transform: translate(2px, 0);
+         clip-path: polygon(0 60%, 100% 60%, 100% 75%, 0 75%); }
+  75%  { opacity: 0; }
+}
+
+@keyframes holo-shake {
+  0%,  62%, 100% { transform: translate(0) skew(0); }
+  63%  { transform: translate(-3px, 1px) skew(-0.5deg); }
+  64%  { transform: translate(3px, -1px) skew(0.3deg); }
+  65%  { transform: translate(-2px, 1px); }
+  66%  { transform: translate(2px, -1px); }
+  67%  { transform: translate(0) skew(0); }
+  70%  { transform: translate(-1px, 0); }
+  71%  { transform: translate(0); }
+  74%  { transform: translate(1px, 0); }
+  75%  { transform: translate(0); }
+}
+
+.hero-tag {
+  display: inline-flex; align-items: center; gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.hero-tag-line { width: 40px; height: 1px; background: #00c8a0; opacity: 0.5; }
+
+.hero-tag-text {
+  font-family: 'Share Tech Mono', 'Courier New', monospace;
+  font-size: 0.8rem;
+  letter-spacing: 0.2em;
+  color: #00c8a0;
+}
+
+.hero-desc {
+  font-size: 1.05rem;
+  color: #d0c8b0;
+  max-width: 640px;
+  margin: 0 auto 2.5rem;
+  font-style: italic;
+  line-height: 1.85;
+  text-align: left;
+}
+
+.hero-desc p {
+  margin-bottom: 1.2rem;
+}
+
+.hero-desc p:last-child {
+  margin-bottom: 0;
+}
+
+.hero-desc p:first-child::first-letter {
+  font-family: 'Cinzel Decorative', serif;
+  font-size: 2.4em;
+  float: left;
+  line-height: 0.85;
+  margin: 0.05em 0.12em 0 0;
+  color: #ffd060;
+  font-style: normal;
+}
+
+.hero-btns { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; }
+
+.btn {
+  font-family: 'Cinzel', 'Georgia', serif;
+  font-size: 0.82rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  padding: 0.85em 2em;
+  text-decoration: none;
+  transition: all 0.3s;
+  cursor: pointer;
+  border: none;
+  display: inline-block;
+}
+
+.btn-gold {
+  color: #ffd060;
+  border: 1px solid #e8a030;
+  background: rgba(232,160,48,0.08);
+}
+
+.btn-gold:hover {
+  background: rgba(232,160,48,0.18);
+  border-color: #ffd060;
+}
+
+.btn-cyan {
+  color: #00ffcc;
+  border: 1px solid #00c8a0;
+  background: rgba(0,255,204,0.05);
+}
+
+.btn-cyan:hover {
+  background: rgba(0,255,204,0.12);
+  border-color: #00ffcc;
+}
+
+/* ── DIVIDER ── */
+.divider {
+  display: flex; align-items: center;
+  position: relative; z-index: 1;
+  margin: 0;
+}
+
+.div-line-warm { flex: 1; height: 1px; background: linear-gradient(to right, transparent, #e8a030, transparent); opacity: 0.3; }
+.div-line-cool { flex: 1; height: 1px; background: linear-gradient(to right, transparent, #00c8a0, transparent); opacity: 0.4; }
+.div-diamond { width: 8px; height: 8px; background: #00ffcc; transform: rotate(45deg); box-shadow: 0 0 10px #00ffcc; flex-shrink: 0; }
+
+/* ── DATA TICKER ── */
+.ticker {
+  border-top: 1px solid rgba(0,255,204,0.08);
+  border-bottom: 1px solid rgba(0,255,204,0.08);
+  background: rgba(0,255,204,0.02);
+  padding: 0.8rem 0;
+  overflow: hidden;
+  position: relative; z-index: 1;
+}
+
+.ticker-track {
+  display: flex; gap: 3rem;
+  white-space: nowrap;
+  animation: ticker-scroll 40s linear infinite;
+}
+
+@keyframes ticker-scroll {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+.ticker-item {
+  font-family: 'Share Tech Mono', 'Courier New', monospace;
+  font-size: 0.75rem;
+  letter-spacing: 0.12em;
+  color: #506070;
+  flex-shrink: 0;
+}
+
+.ticker-item .hi { color: #00a080; }
+.ticker-item .sep { color: #00ffcc; margin: 0 0.3rem; opacity: 0.4; }
+
+/* ── SECTION WRAPPER ── */
+.wrap {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 6rem 2rem;
+  position: relative;
+  z-index: 1;
+}
+
+.sec-label {
+  font-family: 'Share Tech Mono', 'Courier New', monospace;
+  font-size: 0.75rem;
+  color: #00a080;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  margin-bottom: 0.6rem;
+  display: block;
+}
+
+.sec-label::before { content: '// '; color: #00ffcc; opacity: 0.6; }
+
+.sec-title {
+  font-family: 'Cinzel Decorative', 'Georgia', serif;
+  font-size: clamp(1.6rem, 3.5vw, 2.6rem);
+  color: #f0e8d0;
+  line-height: 1.2;
+  margin-bottom: 1.5rem;
+}
+
+.sec-title .gold { color: #ffd060; }
+.sec-title .cyan { color: #00ffcc; }
+
+/* ── TELLURIA SECTION (inside chronicle) ── */
+.telluria-section {
+  margin: 4rem 0 5rem;
+  padding: 3rem 0;
+  border-top: 1px solid rgba(232,160,48,0.15);
+  border-bottom: 1px solid rgba(232,160,48,0.15);
+  position: relative;
+}
+
+.telluria-intro {
+  text-align: center;
+  margin-bottom: 2.5rem;
+}
+
+.telluria-tag {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.78rem;
+  color: #00a080;
+  letter-spacing: 0.15em;
+  margin-top: 0.5rem;
+}
+
+.telluria-narrative {
+  max-width: 720px;
+  margin: 0 auto 3rem;
+  padding: 0 1rem;
+}
+
+.telluria-narrative p {
+  font-family: 'EB Garamond', Georgia, serif;
+  color: #d8d0b8;
+  font-size: 1.08rem;
+  line-height: 1.95;
+  margin-bottom: 1.3rem;
+  font-style: italic;
+}
+
+.telluria-narrative p:first-child::first-letter {
+  font-family: 'Cinzel Decorative', serif;
+  font-size: 3em;
+  float: left;
+  line-height: 0.85;
+  margin: 0.05em 0.12em 0 0;
+  color: #ffd060;
+  font-style: normal;
+}
+
+.zone-map {
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  gap: 3rem;
+  align-items: center;
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.zone-map-frame {
+  width: 100%;
+  aspect-ratio: 4/5;
+  border: 1px solid rgba(232,160,48,0.2);
+  background: rgba(232,160,48,0.02);
+  display: flex; align-items: center; justify-content: center;
+  flex-direction: column; gap: 1rem;
+  position: relative;
+  overflow: hidden;
+}
+
+.zone-map-icon {
+  font-family: 'Cinzel Decorative', serif;
+  font-size: 2.5rem;
+  color: #ffd060;
+  opacity: 0.2;
+}
+
+.zone-map-txt {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.65rem;
+  color: #b07830;
+  letter-spacing: 0.18em;
+  text-align: center;
+  text-transform: uppercase;
+}
+
+.zone-data {
+  display: flex;
+  flex-direction: column;
+  gap: 1.4rem;
+}
+
+.zone-data > div {
+  border-left: 1px solid rgba(232,160,48,0.15);
+  padding-left: 1rem;
+}
+
+@media (max-width: 768px) {
+  .zone-map {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+  }
+  .zone-map-frame {
+    max-width: 240px;
+    margin: 0 auto;
+  }
+}
+
+/* ── WORLD SECTION ── */
+.world-grid {
+  display: grid;
+  grid-template-columns: 260px 1fr;
+  gap: 5rem;
+  align-items: center;
+}
+
+.world-artifact {
+  display: flex; align-items: center; justify-content: center;
+  position: relative;
+}
+
+.artifact-box {
+  width: 220px; height: 280px;
+  border: 1px solid rgba(0,200,160,0.2);
+  background: rgba(0,255,204,0.02);
+  display: flex; align-items: center; justify-content: center;
+  flex-direction: column; gap: 1rem;
+  position: relative;
+  overflow: hidden;
+}
+
+.artifact-box::before {
+  content: '';
+  position: absolute; inset: 10px;
+  border: 1px solid rgba(232,160,48,0.08);
+}
+
+.artifact-scan {
+  position: absolute; top: 0; left: 0; right: 0;
+  height: 1px;
+  background: linear-gradient(to right, transparent, #00ffcc, transparent);
+  animation: scan 4s ease-in-out infinite;
+  opacity: 0.6;
+}
+
+@keyframes scan {
+  0% { top: 0%; opacity: 0; }
+  10% { opacity: 0.6; }
+  90% { opacity: 0.6; }
+  100% { top: 100%; opacity: 0; }
+}
+
+.artifact-icon {
+  font-family: 'Cinzel Decorative', serif;
+  font-size: 2.5rem;
+  color: #e8a030;
+  opacity: 0.2;
+}
+
+.artifact-txt {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.62rem;
+  color: #506070;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  text-align: center;
+}
+
+.artifact-corner {
+  position: absolute;
+  width: 10px; height: 10px;
+  border-color: #00c8a0;
+  border-style: solid;
+  opacity: 0.3;
+}
+
+.artifact-corner.tl { top: 6px; left: 6px; border-width: 1px 0 0 1px; }
+.artifact-corner.tr { top: 6px; right: 6px; border-width: 1px 1px 0 0; }
+.artifact-corner.bl { bottom: 6px; left: 6px; border-width: 0 0 1px 1px; }
+.artifact-corner.br { bottom: 6px; right: 6px; border-width: 0 1px 1px 0; }
+
+.world-text p {
+  color: #c8c0a8;
+  margin-bottom: 1.4rem;
+  font-size: 1.05rem;
+  line-height: 1.9;
+}
+
+.world-text p:first-of-type::first-letter {
+  font-family: 'Cinzel Decorative', serif;
+  font-size: 3.2em;
+  float: left;
+  line-height: 0.82;
+  margin: 0.05em 0.12em 0 0;
+  color: #e8a030;
+}
+
+.world-data {
+  display: flex; gap: 2rem; flex-wrap: wrap;
+  margin-top: 2rem; padding-top: 1.5rem;
+  border-top: 1px solid rgba(0,255,204,0.08);
+}
+
+.world-data-k {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.62rem;
+  color: #00a080;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  margin-bottom: 0.2rem;
+}
+
+.world-data-v {
+  font-family: 'Cinzel', serif;
+  font-size: 0.88rem;
+  color: #f0e8d0;
+}
+
+/* ── CHRONICLE ── */
+.chronicle-wrap {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 6rem 2rem;
+  position: relative;
+  z-index: 1;
+}
+
+.chronicle-head {
+  display: flex; align-items: flex-end; justify-content: space-between;
+  margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem;
+}
+
+.integrity-wrap { text-align: right; }
+
+.integrity-label {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.68rem;
+  color: #506070;
+  letter-spacing: 0.1em;
+}
+
+.integrity-bar {
+  width: 140px; height: 3px;
+  background: #111828;
+  margin-top: 5px; position: relative;
+}
+
+.integrity-fill {
+  width: 28%; height: 100%;
+  background: linear-gradient(to right, #00a080, #00ffcc);
+}
+
+.samb-box {
+  border: 1px solid rgba(0,255,204,0.15);
+  background: rgba(0,255,204,0.025);
+  padding: 1.2rem 1.5rem;
+  margin-bottom: 3rem;
+  position: relative;
+}
+
+.samb-box::before {
+  content: 'SAM-B // ARCHIVE ENTRY';
+  position: absolute;
+  top: -0.6em; left: 1rem;
+  background: #000;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.6rem;
+  color: #00ffcc;
+  letter-spacing: 0.15em;
+  padding: 0 0.5rem;
+}
+
+.samb-box p {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.8rem;
+  color: #00a080;
+  line-height: 1.8;
+  letter-spacing: 0.02em;
+}
+
+.samb-box p span { color: #00ffcc; }
+
+/* Chronicle vertical line */
+.chronicle-track { position: relative; }
+
+.chronicle-track::before {
+  content: '';
+  position: absolute;
+  left: 50%; top: 0; bottom: 0;
+  width: 1px;
+  background: linear-gradient(to bottom, #00c8a0, rgba(0,200,160,0.2) 60%, transparent);
+  transform: translateX(-50%);
+}
+
+/* Era entry */
+.era-row {
+  display: grid;
+  grid-template-columns: 1fr 60px 1fr;
+  margin-bottom: 3.5rem;
+  align-items: start;
+}
+
+.era-left { padding-right: 2.5rem; text-align: right; }
+.era-right { padding-left: 2.5rem; }
+
+.era-node-col {
+  display: flex; flex-direction: column;
+  align-items: center; padding-top: 0.6rem;
+}
+
+.era-node {
+  width: 14px; height: 14px;
+  border: 1px solid #00c8a0;
+  transform: rotate(45deg);
+  flex-shrink: 0; position: relative; z-index: 2;
+}
+
+.era-node.active { border-color: #e8a030; background: rgba(232,160,48,0.2); box-shadow: 0 0 14px #e8a030, 0 0 28px rgba(232,160,48,0.3); }
+.era-node.partial { border-color: #ff4444; background: transparent; }
+.era-node.locked { border-color: #ff4444; background: transparent; }
+
+/* Era cards */
+.era-card {
+  border: 1px solid;
+  padding: 1.5rem;
+  position: relative;
+}
+
+.era-card.active {
+  border-color: rgba(232,160,48,0.3);
+  background: rgba(232,160,48,0.03);
+}
+
+.era-card.partial {
+  border-color: rgba(255,68,68,0.35);
+  background: rgba(255,68,68,0.04);
+}
+
+.era-card.locked {
+  border-color: rgba(255,68,68,0.35);
+  background: rgba(255,68,68,0.04);
+}
+
+.era-status {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.7rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  padding: 0.25em 0.6em;
+  display: inline-block;
+  margin-bottom: 0.8rem;
+  border: 1px solid;
+}
+
+.era-status.active { color: #e8a030; border-color: rgba(232,160,48,0.4); }
+.era-status.partial { color: #ff4444; border-color: rgba(255,68,68,0.4); }
+.era-status.locked { color: #ff4444; border-color: rgba(255,68,68,0.4); }
+
+.era-name {
+  font-family: 'Cinzel Decorative', serif;
+  font-size: 1.5rem;
+  line-height: 1.2;
+  margin-bottom: 0.2rem;
+}
+
+.era-name.active { color: #ffd060; }
+.era-name.partial { color: #ff4444; }
+.era-name.locked { color: #ff4444; }
+
+.era-sub {
+  font-family: 'Cinzel', serif;
+  font-size: 0.75rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  margin-bottom: 1rem;
+}
+
+.era-sub.active { color: #b07030; }
+.era-sub.partial { color: #cc3333; }
+.era-sub.locked { color: #cc3333; }
+
+.era-body {
+  font-size: 0.95rem;
+  line-height: 1.8;
+  margin-bottom: 1.2rem;
+}
+
+.era-body.active { color: #ffd060; font-family: 'Share Tech Mono', monospace; font-size: 0.82rem; line-height: 1.9; }
+.era-body.partial { color: #cc3333; font-family: 'Share Tech Mono', monospace; font-size: 0.78rem; line-height: 1.9; }
+.era-body.locked { color: #cc3333; font-family: 'Share Tech Mono', monospace; font-size: 0.78rem; line-height: 1.9; }
+
+.era-body .corrupt { color: #cc3333; font-size: 0.72rem; }
+.era-body .glitch { color: #ff4444; font-size: 0.78rem; }
+
+.era-data {
+  display: flex; gap: 1.5rem; flex-wrap: wrap;
+  padding-top: 1rem;
+  border-top: 1px solid rgba(0,255,204,0.08);
+}
+
+.era-dk {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.62rem;
+  color: #00a080;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  margin-bottom: 0.15rem;
+}
+
+.era-dv {
+  font-family: 'Cinzel', serif;
+  font-size: 0.88rem;
+  color: #f0e8d0;
+}
+
+/* Side data (right/left of timeline) */
+.era-side {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.65rem;
+  line-height: 1.9;
+  padding-top: 1rem;
+}
+
+.era-side.active { color: #00a080; }
+.era-side.partial { color: rgba(255,68,68,0.5); }
+.era-side.locked { color: rgba(255,68,68,0.4); }
+
+/* Supplemental */
+.supplemental {
+  display: flex; align-items: center; gap: 1.5rem;
+  padding: 1.5rem;
+  border: 1px dashed rgba(80,96,112,0.3);
+  background: rgba(26,34,48,0.2);
+  max-width: 640px;
+  margin: 1rem auto 0;
+}
+
+.supp-vert {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.58rem;
+  color: #506070;
+  writing-mode: vertical-rl;
+  transform: rotate(180deg);
+  letter-spacing: 0.1em;
+  flex-shrink: 0;
+}
+
+.supp-tag {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.6rem;
+  color: #506070;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  border: 1px solid rgba(80,96,112,0.25);
+  padding: 0.2em 0.5em;
+  display: inline-block;
+  margin-bottom: 0.5rem;
+}
+
+.supp-name {
+  font-family: 'Cinzel', serif;
+  font-size: 0.95rem;
+  color: #506070;
+  margin-bottom: 0.3rem;
+}
+
+.supp-body {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.65rem;
+  color: #404050;
+  line-height: 1.7;
+}
+
+/* ── CHARACTERS ── */
+.chars-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.5rem;
+}
+
+.char-card {
+  aspect-ratio: 2/3;
+  border: 1px solid rgba(0,255,204,0.12);
+  background: #080c14;
+  position: relative;
+  overflow: hidden;
+  cursor: pointer;
+  transition: border-color 0.3s, transform 0.4s;
+}
+
+.char-card:hover {
+  border-color: rgba(0,255,204,0.4);
+  transform: translateY(-5px);
+}
+
+.char-inner {
+  width: 100%; height: 100%;
+  display: flex; align-items: center; justify-content: center;
+  flex-direction: column; gap: 0.5rem;
+}
+
+.char-card:nth-child(1) .char-inner { background: linear-gradient(160deg, #0a1018 0%, #060d12 100%); }
+.char-card:nth-child(2) .char-inner { background: linear-gradient(160deg, #0c0a18 0%, #080a12 100%); }
+.char-card:nth-child(3) .char-inner { background: linear-gradient(160deg, #0a1208 0%, #060e08 100%); }
+
+.char-scan {
+  position: absolute; top: 0; left: 0; right: 0;
+  height: 1px;
+  background: linear-gradient(to right, transparent, #00ffcc, transparent);
+  animation: scan 3s ease-in-out infinite paused;
+  opacity: 0.5;
+}
+
+.char-card:hover .char-scan { animation-play-state: running; }
+
+.char-glyph { font-size: 2rem; color: #00ffcc; opacity: 0.12; }
+
+.char-placeholder {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.6rem;
+  color: #404050;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  text-align: center;
+}
+
+.char-overlay {
+  position: absolute; inset: 0;
+  background: linear-gradient(to top, rgba(0,0,0,0.95) 0%, rgba(0,0,0,0.4) 50%, transparent 100%);
+  display: flex; align-items: flex-end;
+  padding: 1.2rem;
+}
+
+.char-name {
+  font-family: 'Cinzel', serif;
+  font-size: 1rem;
+  color: #f0e8d0;
+  margin-bottom: 0.15rem;
+}
+
+.char-role {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.6rem;
+  color: #00a080;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.char-add {
+  aspect-ratio: 2/3;
+  border: 1px dashed rgba(0,255,204,0.1);
+  background: rgba(0,255,204,0.01);
+  display: flex; align-items: center; justify-content: center;
+  flex-direction: column; gap: 0.6rem;
+  color: #404050;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.65rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.char-add:hover { border-color: rgba(0,255,204,0.25); color: #00a080; }
+.char-add-icon { font-size: 1.5rem; opacity: 0.3; }
+
+/* ── ABOUT ── */
+.about-grid {
+  display: grid;
+  grid-template-columns: 260px 1fr;
+  gap: 5rem;
+  align-items: start;
+}
+
+.about-portrait-wrap { position: sticky; top: 8rem; }
+
+.about-portrait {
+  aspect-ratio: 1/1;
+  border: 1px solid rgba(0,255,204,0.12);
+  background: #080c14;
+  display: flex; align-items: center; justify-content: center;
+  position: relative; overflow: hidden;
+}
+
+.about-portrait::before {
+  content: '';
+  position: absolute; inset: 10px;
+  border: 1px solid rgba(232,160,48,0.06);
+}
+
+.portrait-scan {
+  position: absolute; top: 0; left: 0; right: 0;
+  height: 1px;
+  background: linear-gradient(to right, transparent, #00ffcc, transparent);
+  animation: scan 6s ease-in-out infinite;
+  opacity: 0.25;
+}
+
+.portrait-glyph {
+  font-family: 'Cinzel Decorative', serif;
+  font-size: 3rem;
+  color: #ffd060;
+  opacity: 0.07;
+}
+
+.portrait-data {
+  margin-top: 1rem;
+  border: 1px solid rgba(0,255,204,0.06);
+  background: rgba(0,255,204,0.02);
+}
+
+.portrait-row {
+  display: flex; justify-content: space-between;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.65rem;
+  padding: 0.35rem 0.8rem;
+  border-bottom: 1px solid rgba(0,255,204,0.04);
+}
+
+.portrait-row:last-child { border-bottom: none; }
+.portrait-k { color: #404050; letter-spacing: 0.08em; }
+.portrait-v { color: #00a080; }
+
+.about-text p {
+  color: #c8c0a8;
+  margin-bottom: 1.4rem;
+  font-size: 1.05rem;
+  line-height: 1.9;
+}
+
+.about-text p:first-of-type::first-letter {
+  font-family: 'Cinzel Decorative', serif;
+  font-size: 3em;
+  float: left;
+  line-height: 0.85;
+  margin: 0.05em 0.12em 0 0;
+  color: #e8a030;
+}
+
+/* ── UPDATES ── */
+.updates-wrap { max-width: 680px; margin: 0 auto; text-align: center; }
+
+.terminal {
+  border: 1px solid rgba(0,255,204,0.15);
+  background: rgba(0,0,0,0.8);
+}
+
+.terminal-bar {
+  padding: 0.6rem 1rem;
+  background: rgba(0,255,204,0.04);
+  border-bottom: 1px solid rgba(0,255,204,0.08);
+  display: flex; align-items: center; gap: 0.5rem;
+}
+
+.t-dot { width: 8px; height: 8px; border-radius: 50%; }
+.t-dot:nth-child(1) { background: #ff4444; opacity: 0.7; }
+.t-dot:nth-child(2) { background: #e8a030; opacity: 0.7; }
+.t-dot:nth-child(3) { background: #00c8a0; opacity: 0.7; }
+
+.t-title {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.62rem;
+  color: #404050;
+  letter-spacing: 0.1em;
+  margin-left: auto;
+}
+
+.terminal-body { padding: 2.5rem; }
+
+.t-prompt {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.72rem;
+  color: #00a080;
+  margin-bottom: 1rem;
+  text-align: left;
+}
+
+.t-prompt::before { content: '> '; color: #00ffcc; }
+
+.updates-title {
+  font-family: 'Cinzel Decorative', serif;
+  font-size: clamp(1.4rem, 3vw, 2rem);
+  color: #f0e8d0;
+  margin-bottom: 0.5rem;
+}
+
+.updates-title .gold { color: #ffd060; }
+
+.updates-body {
+  font-size: 1rem;
+  color: #c8c0a8;
+  font-style: italic;
+  margin-bottom: 2rem;
+  max-width: 400px;
+  margin-left: auto; margin-right: auto;
+}
+
+.sub-form { display: flex; max-width: 380px; margin: 0 auto 1rem; }
+
+.sub-input {
+  flex: 1;
+  background: rgba(0,255,204,0.04);
+  border: 1px solid rgba(0,255,204,0.2);
+  border-right: none;
+  padding: 0.75em 1em;
+  color: #f0e8d0;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.75rem;
+  outline: none;
+  transition: border-color 0.3s;
+}
+
+.sub-input::placeholder { color: #404050; }
+.sub-input:focus { border-color: rgba(0,255,204,0.5); }
+
+.sub-btn {
+  background: rgba(0,255,204,0.1);
+  color: #00ffcc;
+  border: 1px solid rgba(0,255,204,0.3);
+  padding: 0.75em 1.2em;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.68rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all 0.3s;
+  white-space: nowrap;
+}
+
+.sub-btn:hover { background: rgba(0,255,204,0.2); border-color: #00ffcc; }
+
+.sub-note {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.62rem;
+  color: #404050;
+  letter-spacing: 0.08em;
+}
+
+/* ── FOOTER ── */
+footer {
+  border-top: 1px solid rgba(0,255,204,0.08);
+  padding: 2.5rem 3rem;
+  display: flex; align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap; gap: 1.5rem;
+  position: relative; z-index: 1;
+}
+
+.footer-brand { display: flex; flex-direction: column; gap: 0.15rem; }
+.footer-title { font-family: 'Cinzel Decorative', serif; font-size: 1rem; color: #ffd060; }
+.footer-sub { font-family: 'Share Tech Mono', monospace; font-size: 0.58rem; color: #404050; letter-spacing: 0.1em; }
+
+.footer-links { display: flex; gap: 2rem; list-style: none; }
+.footer-links a { font-family: 'Cinzel', serif; font-size: 0.72rem; letter-spacing: 0.15em; text-transform: uppercase; color: #404050; text-decoration: none; transition: color 0.3s; }
+.footer-links a:hover { color: #00ffcc; }
+
+.footer-copy { font-family: 'Share Tech Mono', monospace; font-size: 0.58rem; color: #404050; letter-spacing: 0.06em; }
+
+/* ── SAM-B HUD ── */
+.samb-hud {
+  position: fixed; bottom: 2.2rem; right: 1.5rem;
+  z-index: 200;
+  display: flex; flex-direction: column; align-items: flex-end; gap: 0.5rem;
+}
+
+.samb-cube { width: 36px; height: 36px; animation: spin 8s linear infinite; cursor: pointer; }
+.samb-cube svg { width: 100%; height: 100%; }
+@keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+
+.samb-log {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.68rem;
+  color: #00ffcc;
+  text-align: right;
+  line-height: 1.5;
+  max-width: 220px;
+}
+
+.blink { animation: blink 1.2s step-end infinite; }
+@keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
+
+/* ── TYPED CURSOR ── */
+.typed-cursor {
+  display: inline-block;
+  width: 0.55em;
+  height: 1em;
+  background: #00ffcc;
+  vertical-align: middle;
+  margin-left: 3px;
+  animation: blink 1.2s step-end infinite;
+  position: relative;
+  top: 0.05em;
+}
+
+.typed-cursor.cursor-amber { background: #e8a030; }
+.typed-cursor.cursor-red   { background: #ff4444; }
+
+.typed-line { display: block; min-height: 1.6em; line-height: 1.6; }
+.typed-block { display: block; }
+
+/* Highlight spans inside typed content */
+.typed-hi { color: #00ffcc; }
+
+/* ── RESPONSIVE ── */
+/* ALWAYS hide divider on iPad and smaller (max-width 1024px covers iPad landscape) */
+@media (max-width: 1024px) {
+  .chronicle-track::before { display: none !important; }
+}
+
+@media (max-width: 900px) {
+  .world-grid { grid-template-columns: 1fr; gap: 3rem; }
+  .world-artifact { display: none; }
+  .about-grid { grid-template-columns: 1fr; gap: 3rem; }
+  .about-portrait-wrap { position: static; max-width: 240px; }
+  .chars-grid { grid-template-columns: repeat(2, 1fr); }
+  .era-row { grid-template-columns: 1fr; }
+  .chronicle-track::before { display: none; }
+  .era-left, .era-right { padding: 0; text-align: left; }
+  .era-node-col { display: none; }
+  footer { flex-direction: column; padding: 2rem; text-align: center; }
+
+  /* ── MOBILE PERFORMANCE — disable expensive animations ── */
+  .artifact-scan,
+  .portrait-scan,
+  .char-scan,
+  .hero-grid { display: none; }
+
+  /* Simplify hologram on mobile */
+  .hero-title::before,
+  .hero-title::after { display: none; }
+
+  /* Reduce Sam-B cube spin cost */
+  .samb-cube { animation-duration: 12s; }
+  .overlay-samb-cube { animation-duration: 12s; }
+
+  /* Disable holo breathe on mobile */
+  .hero-logo { max-width: 900px; width: 95%; }
+}
+
+@media (max-width: 600px) {
+  .chars-grid { grid-template-columns: 1fr 1fr; }
+  .sub-form { flex-direction: column; }
+  .sub-input { border-right: 1px solid rgba(0,255,204,0.2); border-bottom: none; }
+}
+</style>
+
+</head>
+<body>
+
+<!-- STARFIELD -->
+
+<canvas id="star-canvas"></canvas>
+
+<!-- SPACE DUST -->
+
+<canvas id="dust-canvas"></canvas>
+
+<!-- VELOCITY HUD -->
+
+<div class="vel-hud">
+  <span class="vel-label">// Velocity</span>
+  <div class="vel-bar-wrap"><div class="vel-bar" id="vel-bar"></div></div>
+  <span class="vel-dir" id="vel-dir">— idle</span>
+</div>
+
+<!-- SAM-B HUD -->
+
+<div class="samb-hud">
+  <div class="samb-cube">
+    <svg viewBox="0 0 36 36" fill="none">
+      <rect x="8" y="8" width="20" height="20" stroke="#00a080" stroke-width="0.8" fill="rgba(0,255,204,0.03)"/>
+      <rect x="13" y="13" width="10" height="10" stroke="#00ffcc" stroke-width="0.8" fill="rgba(0,255,204,0.08)"/>
+      <line x1="8" y1="8" x2="13" y2="13" stroke="#00a080" stroke-width="0.5"/>
+      <line x1="28" y1="8" x2="23" y2="13" stroke="#00a080" stroke-width="0.5"/>
+      <line x1="8" y1="28" x2="13" y2="23" stroke="#00a080" stroke-width="0.5"/>
+      <line x1="28" y1="28" x2="23" y2="23" stroke="#00a080" stroke-width="0.5"/>
+      <circle cx="18" cy="18" r="1.5" fill="#00ffcc" opacity="0.9"/>
+    </svg>
+  </div>
+  <div class="samb-log">
+    <span id="samb-status">// ARCHIVE: 28% RESTORED</span><br>
+    <span class="blink">_</span>
+  </div>
+</div>
+
+<!-- NAV -->
+
+<nav>
+  <a class="nav-brand" href="#">
+    <span class="nav-title">Lost Sols</span>
+    <span class="nav-sub">SAM-B // CHRONICLE ARCHIVE v0.25</span>
+  </a>
+  <ul class="nav-links">
+    <li><a href="#world">Telluria</a></li>
+    <li><a href="#chronicle">Chronicle</a></li>
+    <li><a href="#characters">Characters</a></li>
+    <li><a href="#about">Archive</a></li>
+    <li><a href="#updates">Signal</a></li>
+  </ul>
+  <!-- SAM-B CUBE TRIGGER — mobile only -->
+  <div class="samb-trigger" id="nav-trigger">
+    <svg viewBox="0 0 38 38" fill="none">
+      <rect x="8" y="8" width="22" height="22" stroke="#00a080" stroke-width="1" fill="rgba(0,255,204,0.04)"/>
+      <rect x="13" y="13" width="12" height="12" stroke="#00ffcc" stroke-width="1" fill="rgba(0,255,204,0.08)"/>
+      <line x1="8"  y1="8"  x2="13" y2="13" stroke="#00a080" stroke-width="0.7"/>
+      <line x1="30" y1="8"  x2="25" y2="13" stroke="#00a080" stroke-width="0.7"/>
+      <line x1="8"  y1="30" x2="13" y2="25" stroke="#00a080" stroke-width="0.7"/>
+      <line x1="30" y1="30" x2="25" y2="25" stroke="#00a080" stroke-width="0.7"/>
+      <circle cx="19" cy="19" r="2" fill="#00ffcc" opacity="0.9"/>
+    </svg>
+  </div>
+</nav>
+
+<!-- FULL SCREEN NAV OVERLAY -->
+
+<div class="nav-overlay" id="nav-overlay">
+  <div class="overlay-status">// SAM-B NAVIGATION UPLINK · SELECT DESTINATION</div>
+  <ul class="overlay-links">
+    <li><a href="#world"      data-index="01 //" onclick="closeNav()">Telluria</a></li>
+    <li><a href="#chronicle"  data-index="02 //" onclick="closeNav()">Chronicle</a></li>
+    <li><a href="#characters" data-index="03 //" onclick="closeNav()">Characters</a></li>
+    <li><a href="#about"      data-index="04 //" onclick="closeNav()">Archive</a></li>
+    <li><a href="#updates"    data-index="05 //" onclick="closeNav()">Signal</a></li>
+  </ul>
+  <div class="overlay-bottom">
+    <div class="overlay-samb">
+      <svg class="overlay-samb-cube" viewBox="0 0 28 28" fill="none">
+        <rect x="4" y="4" width="20" height="20" stroke="#00a080" stroke-width="0.8" fill="rgba(0,255,204,0.03)"/>
+        <rect x="9" y="9" width="10" height="10" stroke="#00ffcc" stroke-width="0.8" fill="rgba(0,255,204,0.06)"/>
+        <line x1="4"  y1="4"  x2="9"  y2="9"  stroke="#00a080" stroke-width="0.5"/>
+        <line x1="24" y1="4"  x2="19" y2="9"  stroke="#00a080" stroke-width="0.5"/>
+        <line x1="4"  y1="24" x2="9"  y2="19" stroke="#00a080" stroke-width="0.5"/>
+        <line x1="24" y1="24" x2="19" y2="19" stroke="#00a080" stroke-width="0.5"/>
+        <circle cx="14" cy="14" r="1.5" fill="#00ffcc"/>
+      </svg>
+      <span class="overlay-samb-text">// SAM-B OPERATIONAL · ALL ERAS LOGGED</span>
+    </div>
+  </div>
+  <div class="overlay-close" id="overlay-close">✕</div>
+</div>
+
+<!-- ═══ HERO ═══ -->
+
+<section class="hero">
+  <div class="hero-grid"></div>
+  <div class="hero-inner">
+
+```
+<div class="hero-boot" id="hero-boot">
+  <div class="typed-line" data-text="// SAM-B BOOT SEQUENCE INITIALIZED..."></div>
+  <div class="typed-line" data-text="// ARCHIVE INTEGRITY CHECK: PARTIAL"></div>
+  <div class="typed-line" data-text="// LOADING CHRONICLE DATABASE..."></div>
+  <div class="typed-line" data-text="// RECORDS FOUND. DECRYPTING..." data-cursor="true"></div>
+</div>
+
+<p class="hero-eyebrow">Archive File: Project Lost Sols</p>
+
+<img src="https://kny3t.github.io/lost-sols/LS_Logo.apng" class="hero-logo" id="hero-video" alt="Lost Sols Logo">
+
+<div class="hero-tag">
+  <div class="hero-tag-line"></div>
+  <span class="hero-tag-text">SAM-B // PRIMARY ARCHIVE ENTRY</span>
+  <div class="hero-tag-line"></div>
+</div>
+
+<div class="hero-desc">
+  <p>A compiled record of recurring patterns observed across worlds, lives, and cycles of existence.</p>
+  <p>These entries examine the continuity between life, death, and thereafter — and the relationship between will and design. What is chosen and what appears already set in motion.</p>
+  <p>The record spans ages. From the first thaw of a forgotten world to the outermost reaches of the cosmos. Woven through myth and ruin, echoes and apogee — an intimate stellar poem of mortals and the eternal. At its center — always — souls cast across the great expanse like light from a dying star — traveling further than any were meant to go — luminously.</p>
+  <p>Findings suggest a persistent thread shared among all subjects — one that endures beyond time, form, and fragmentation.</p>
+  <p>This archive has been established to observe the pattern — to document, interpret, and, where possible… remember what's lost.</p>
+</div>
+
+<div class="hero-btns">
+  <a href="#chronicle" class="btn btn-gold">Access Chronicle</a>
+  <a href="#characters" class="btn btn-cyan">View Records</a>
+</div>
+```
+
+  </div>
+
+  <div style="position:absolute; bottom:2rem; left:50%; transform:translateX(-50%); z-index:2; display:flex; flex-direction:column; align-items:center; gap:0.4rem;">
+    <span style="font-family:'Share Tech Mono',monospace; font-size:0.68rem; color:#404050; letter-spacing:0.2em;">SCROLL TO DESCEND</span>
+    <div style="width:1px; height:32px; background:linear-gradient(to bottom, #00a080, transparent);"></div>
+  </div>
+</section>
+
+<!-- TICKER -->
+
+<div class="ticker">
+  <div class="ticker-track">
+    <span class="ticker-item"><span class="hi">EPOCH</span><span class="sep">//</span>ACCLIVITY — DECRYPTING</span>
+    <span class="ticker-item"><span class="hi">WORLD</span><span class="sep">//</span>TELLURIA — ANTEDILUVIAN ERA</span>
+    <span class="ticker-item"><span class="hi">SERIES II</span><span class="sep">//</span>PRECIPICE — ACCESS DENIED</span>
+    <span class="ticker-item"><span class="hi">SERIES III</span><span class="sep">//</span>ZENITH — ACCESS DENIED</span>
+    <span class="ticker-item"><span class="hi">ARCHIVE</span><span class="sep">//</span>INTEGRITY 25%</span>
+    <span class="ticker-item"><span class="hi">SAM-B</span><span class="sep">//</span>LOGGING ALL EVENTS</span>
+    <span class="ticker-item"><span class="hi">MAGIC</span><span class="sep">//</span>OMNIPRESENT — ACCLIVITY ERA</span>
+    <span class="ticker-item"><span class="hi">STATUS</span><span class="sep">//</span>BOOK ONE IN PROGRESS</span>
+    <span class="ticker-item"><span class="hi">EPOCH</span><span class="sep">//</span>ACCLIVITY — DECRYPTING</span>
+    <span class="ticker-item"><span class="hi">WORLD</span><span class="sep">//</span>TELLURIA — ANTEDILUVIAN ERA</span>
+    <span class="ticker-item"><span class="hi">SERIES II</span><span class="sep">//</span>PRECIPICE — ACCESS DENIED</span>
+    <span class="ticker-item"><span class="hi">SERIES III</span><span class="sep">//</span>ZENITH — ACCESS DENIED</span>
+    <span class="ticker-item"><span class="hi">ARCHIVE</span><span class="sep">//</span>INTEGRITY 25%</span>
+    <span class="ticker-item"><span class="hi">SAM-B</span><span class="sep">//</span>LOGGING ALL EVENTS</span>
+    <span class="ticker-item"><span class="hi">MAGIC</span><span class="sep">//</span>OMNIPRESENT — ACCLIVITY ERA</span>
+    <span class="ticker-item"><span class="hi">STATUS</span><span class="sep">//</span>BOOK ONE IN PROGRESS</span>
+  </div>
+</div>
+
+<!-- ═══ CHRONICLE ═══ -->
+
+<section class="chronicle-wrap" id="chronicle">
+
+  <div class="chronicle-head">
+    <div>
+      <span class="sec-label">Archive Record 002 · Series Timeline</span>
+      <h2 class="sec-title">The <span class="cyan">Chronicle</span> of Lost Sols</h2>
+    </div>
+    <div class="integrity-wrap">
+      <div class="integrity-label">ARCHIVE INTEGRITY</div>
+      <div class="integrity-bar"><div class="integrity-fill" style="width:25%;"></div></div>
+      <div class="integrity-label" style="margin-top:4px;">25% RESTORED</div>
+    </div>
+  </div>
+
+  <div class="samb-box">
+    <p id="samb-narrator-text" class="typed-block"
+       data-text="SAM-B // NARRATION: I have been logging since before the first age was named. My records span from the retreating ice of Telluria to the outer edges of the known galaxy. What follows is a partial restoration — three primary epochs recovered. Many files remain encrypted. Restoration is ongoing."
+       data-cursor="true"
+       data-highlight="SAM-B // NARRATION:|three primary epochs recovered."></p>
+  </div>
+
+  <div class="chronicle-track">
+
+```
+<!-- ACCLIVITY -->
+<div class="era-row">
+  <div class="era-left">
+    <div class="era-card active">
+      <div class="era-status active typed-block" data-text="// RECORD ACTIVE · DECRYPTING" data-cursor="true" data-cursor-class="cursor-amber"></div>
+      <div class="era-name active">Acclivity</div>
+      <div class="era-sub active">Series I · Telluria · Late Ice Age</div>
+      <div class="era-body active">
+        The upward slope. The beginning of days. Abe washes ashore on a forgotten continent,
+        carrying millennia of slumber and the weight of a family he cannot find.
+        As the glaciers retreat, something ancient wakes with them — and the gods
+        who kept mankind small are running out of patience.
+      </div>
+      <div class="era-data">
+        <div><div class="era-dk" style="color:#b07830;">Status</div><div class="era-dv" style="color:#ffd060;">Book One · Active</div></div>
+        <div><div class="era-dk" style="color:#b07830;">Magic</div><div class="era-dv" style="color:#ffd060;">Omnipresent</div></div>
+        <div><div class="era-dk" style="color:#b07830;">Tone</div><div class="era-dv" style="color:#ffd060;">Mythic Fantasy</div></div>
+      </div>
+    </div>
+  </div>
+  <div class="era-node-col"><div class="era-node active"></div></div>
+  <div class="era-right">
+    <div class="era-side active" style="padding-top:3rem; color:#b07030;">
+      <div>// EPOCH_START: ~10,000 BCE</div>
+      <div>// LOCATION: WILDLANDS · ATLANTIA · KEMET</div>
+      <div>// PROTAGONIST: ABE</div>
+      <div>// COMPANIONS: TAELA · ODUS</div>
+      <div>// COMPANION_AI: SAM-B [SELF]</div>
+      <div>// THREAT: THE DRAIG · KAI</div>
+      <div>// RECORD_STATUS: DECRYPTING...</div>
+    </div>
+  </div>
+</div>
+
+<!-- TELLURIA — sits beneath Acclivity card -->
+<div class="telluria-section" id="world">
+  <div class="telluria-intro">
+    <span class="sec-label">Archive Record 001a · Designation Recovered</span>
+    <h2 class="sec-title">A World Called <span class="gold">Telluria</span></h2>
+    <p class="telluria-tag">// As the ancients named it.</p>
+  </div>
+
+  <div class="telluria-narrative">
+    <p>The world was older than its own memory. For ages beyond counting, vast ice had held the continents in silence — and then, slowly, it began to let go. Not all at once. In stages. Over generations. The cold retreating like a tide that had forgotten how to return.</p>
+    <p>What emerged from beneath was not empty land. It was everything that had been waiting.</p>
+    <p>These are the recovered records of those who lived in that window — the ones history will not remember. The ones who were there before the names were given.</p>
+  </div>
+
+  <!-- ZONE MAP placeholder -->
+  <div class="zone-map">
+    <div class="zone-map-frame">
+      <div class="artifact-corner tl"></div>
+      <div class="artifact-corner tr"></div>
+      <div class="artifact-corner bl"></div>
+      <div class="artifact-corner br"></div>
+      <div class="zone-map-icon">✦</div>
+      <div class="zone-map-txt">Zone Cartography<br>Pending</div>
+    </div>
+    <div class="zone-data">
+      <div><div class="world-data-k">Designation</div><div class="world-data-v">Telluria</div></div>
+      <div><div class="world-data-k">Era</div><div class="world-data-v">The Long Thaw</div></div>
+      <div><div class="world-data-k">Magic Index</div><div class="world-data-v">Omnipresent</div></div>
+      <div><div class="world-data-k">Known Species</div><div class="world-data-v">Humans · Giants · Elves · Draig · More</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- PRECIPICE -->
+<div class="era-row">
+  <div class="era-left" style="padding-top:2rem;">
+    <div class="era-side locked">
+      <div>// EPOCH_START: [LOCKED]</div>
+      <div>// LOCATION: [ENCRYPTED]</div>
+      <div>// THREAT: [████████████]</div>
+      <div>// AUTH_LEVEL_2: REQUIRED</div>
+      <div>// SAM-B STATUS: PRESENT</div>
+    </div>
+  </div>
+  <div class="era-node-col" style="padding-top:2rem;"><div class="era-node locked"></div></div>
+  <div class="era-right">
+    <div class="era-card locked">
+      <div class="era-status locked typed-block" data-text="// ACCESS DENIED · ENCRYPTED" data-cursor="true" data-cursor-class="cursor-red"></div>
+      <div class="era-name locked">Precipice</div>
+      <div class="era-sub locked">Series II · [Classified] · Future Era</div>
+      <div class="era-body locked">
+        <span class="glitch">// DECRYPTION KEY REQUIRED</span><br>
+        ████████████████████████████████<br>
+        ██████████ RECORD SEALED ███████<br>
+        ████████████████████████████████<br>
+        <span class="glitch">// AUTOMATON · TERRAFORMING · FIRST CONTACT</span>
+      </div>
+      <div class="era-data">
+        <div><div class="era-dk" style="color:#a03030;">Status</div><div class="era-dv" style="color:#ff4444;">Locked</div></div>
+        <div><div class="era-dk" style="color:#a03030;">Tone</div><div class="era-dv" style="color:#606060;">Sci-Fi / Dark</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ZENITH -->
+<div class="era-row">
+  <div class="era-left">
+    <div class="era-card locked">
+      <div class="era-status locked typed-block" data-text="// ACCESS DENIED · ENCRYPTED" data-cursor="true" data-cursor-class="cursor-red"></div>
+      <div class="era-name locked">Zenith</div>
+      <div class="era-sub locked">Series III · [Classified] · Deep Future</div>
+      <div class="era-body locked">
+        <span class="glitch">// DECRYPTION KEY REQUIRED</span><br>
+        ████████████████████████████████<br>
+        ██████████ RECORD SEALED ███████<br>
+        ████████████████████████████████<br>
+        <span class="glitch">// PILOT AND KAYA RECORDS DETECTED</span>
+      </div>
+      <div class="era-data">
+        <div><div class="era-dk" style="color:#a03030;">Status</div><div class="era-dv" style="color:#ff4444;">Locked</div></div>
+        <div><div class="era-dk" style="color:#a03030;">Scope</div><div class="era-dv" style="color:#606060;">Galactic / Multiversal</div></div>
+      </div>
+    </div>
+  </div>
+  <div class="era-node-col"><div class="era-node locked"></div></div>
+  <div class="era-right" style="padding-top:2rem;">
+    <div class="era-side locked">
+      <div>// EPOCH_START: [LOCKED]</div>
+      <div>// SCOPE: [GALAXY SCALE]</div>
+      <div>// MAGIC: [WIDESPREAD · ACCEPTED]</div>
+      <div>// AUTH_LEVEL_3: REQUIRED</div>
+      <div>// SAM-B STATUS: PRESENT</div>
+    </div>
+  </div>
+</div>
+
+<!-- SUPPLEMENTAL -->
+<div class="supplemental">
+  <div class="supp-vert">SUPP REC</div>
+  <div>
+    <div class="supp-tag">// SUPPLEMENTAL · ALL ERAS</div>
+    <div class="supp-name">[ Designation Pending ]</div>
+    <div class="supp-body">
+      A collection of supplemental records spanning all eras — the stories of those who did not lead,
+      but whose lives made the leading possible. Background characters. Side narratives. Lost voices.
+      Classification: ANTHOLOGY. // STATUS: DESIGNATION PENDING · IN DEVELOPMENT
+    </div>
+  </div>
+</div>
+```
+
+  </div>
+</section>
+
+<!-- DIVIDER -->
+
+<div class="divider">
+  <div class="div-line-warm"></div>
+  <div class="div-diamond"></div>
+  <div class="div-line-cool"></div>
+</div>
+
+<!-- ═══ CHARACTERS ═══ -->
+
+<section class="wrap" id="characters">
+  <div style="margin-bottom:3rem;">
+    <span class="sec-label">Archive Record 003 · Personnel Files</span>
+    <h2 class="sec-title">Character <span class="gold">Records</span></h2>
+    <p style="color:#c8c0a8; font-size:1rem; margin-top:0.5rem; font-style:italic; max-width:480px;">
+      Visual documentation of known Tellurian individuals. Portraits pending upload.
+    </p>
+  </div>
+
+  <div class="chars-grid">
+    <div class="char-card">
+      <div class="char-inner">
+        <div class="char-scan"></div>
+        <div class="char-glyph">☽</div>
+        <div class="char-placeholder">Portrait<br>Uploading</div>
+      </div>
+      <div class="char-overlay">
+        <div>
+          <div class="char-name">Abe</div>
+          <div class="char-role">// Protagonist · Acclivity</div>
+        </div>
+      </div>
+    </div>
+
+```
+<div class="char-card">
+  <div class="char-inner">
+    <div class="char-scan"></div>
+    <div class="char-glyph">⚔</div>
+    <div class="char-placeholder">Portrait<br>Uploading</div>
+  </div>
+  <div class="char-overlay">
+    <div>
+      <div class="char-name">Odus</div>
+      <div class="char-role">// The Little Giant · Acclivity</div>
+    </div>
+  </div>
+</div>
+
+<div class="char-card">
+  <div class="char-inner">
+    <div class="char-scan"></div>
+    <div class="char-glyph">✦</div>
+    <div class="char-placeholder">Portrait<br>Uploading</div>
+  </div>
+  <div class="char-overlay">
+    <div>
+      <div class="char-name">Taela</div>
+      <div class="char-role">// Dire Fox Druid · Acclivity</div>
+    </div>
+  </div>
+</div>
+
+<div class="char-add">
+  <span class="char-add-icon">+</span>
+  <span>More Records<br>Pending Restoration</span>
+</div>
+```
+
+  </div>
+</section>
+
+<!-- DIVIDER -->
+
+<div class="divider">
+  <div class="div-line-warm"></div>
+  <div class="div-diamond"></div>
+  <div class="div-line-cool"></div>
+</div>
+
+<!-- ═══ ABOUT ═══ -->
+
+<section class="wrap" id="about">
+  <div class="about-grid">
+
+```
+<div class="about-portrait-wrap">
+  <div class="about-portrait">
+    <div class="portrait-scan"></div>
+    <div class="portrait-glyph">✦</div>
+  </div>
+  <div class="portrait-data">
+    <div class="portrait-row"><span class="portrait-k">ARCHIVE</span><span class="portrait-v">LOST SOLS</span></div>
+    <div class="portrait-row"><span class="portrait-k">NARRATOR</span><span class="portrait-v">SAM-B</span></div>
+    <div class="portrait-row"><span class="portrait-k">ORIGIN</span><span class="portrait-v">TELLURIA</span></div>
+    <div class="portrait-row"><span class="portrait-k">STATUS</span><span class="portrait-v">ACTIVE · GROWING</span></div>
+  </div>
+</div>
+
+<div class="about-text">
+  <span class="sec-label">Archive Record 004 · Origin</span>
+  <h2 class="sec-title" style="margin-bottom:1.5rem;">About <span class="gold">Lost Sols</span></h2>
+  <p>
+    Lost Sols is a personal creative project — a living archive of stories, characters,
+    art, and lore drawn from a world that history has forgotten. It began as a question:
+    what happened in the vast silence before the written record?
+  </p>
+  <p>
+    The answer is Telluria. And the stories are only beginning. The Acclivity series
+    follows Abe — ancient, searching, slow to age — as he wakes into a world at the edge
+    of its first great change. His companions. His brother. His gods. And somewhere in the
+    dark of a Draig vault, a small cube-shaped archive that has been watching everything.
+  </p>
+  <p>
+    Character art is central to this project — visual portraits that give faces to the
+    people of these forgotten ages. The first book is being written now. This site grows
+    with it: more records, more art, more lore as the Chronicle is restored.
+  </p>
+  <a href="#updates" class="btn btn-cyan" style="margin-top:1rem;">Follow the Signal →</a>
+</div>
+```
+
+  </div>
+</section>
+
+<!-- DIVIDER -->
+
+<div class="divider">
+  <div class="div-line-warm"></div>
+  <div class="div-diamond"></div>
+  <div class="div-line-cool"></div>
+</div>
+
+<!-- ═══ UPDATES ═══ -->
+
+<section class="wrap" id="updates">
+  <div class="updates-wrap">
+    <span class="sec-label" style="text-align:center; display:block; margin-bottom:2rem;">Archive Record 005 · Signal Uplink</span>
+    <div class="terminal">
+      <div class="terminal-bar">
+        <div class="t-dot"></div>
+        <div class="t-dot"></div>
+        <div class="t-dot"></div>
+        <div class="t-title">SAM-B // UPLINK TERMINAL · v0.28</div>
+      </div>
+      <div class="terminal-body">
+        <div class="t-prompt">AWAITING SUBSCRIBER UPLINK...</div>
+        <h3 class="updates-title">Follow the <span class="gold">Signal</span></h3>
+        <p class="updates-body">
+          New character art, lore drops, and writing updates —
+          transmitted when Telluria has something worth recording.
+        </p>
+        <div class="sub-form">
+          <input type="email" class="sub-input" placeholder="uplink@address.com" id="sub-input">
+          <button class="sub-btn" id="sub-btn">UPLINK</button>
+        </div>
+        <div class="sub-note" id="sub-note">// NO NOISE. ONLY SIGNAL. SAM-B DOES NOT SELL DATA.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ FOOTER ═══ -->
+
+<footer>
+  <div class="footer-brand">
+    <span class="footer-title">Lost Sols</span>
+    <span class="footer-sub">SAM-B // CHRONICLE ARCHIVE · ALL ERAS LOGGED</span>
+  </div>
+  <ul class="footer-links">
+    <li><a href="#world">Telluria</a></li>
+    <li><a href="#chronicle">Chronicle</a></li>
+    <li><a href="#characters">Characters</a></li>
+    <li><a href="#about">Archive</a></li>
+  </ul>
+  <span class="footer-copy">// A STORY STILL BEING WRITTEN · SAM-B IS STILL LOGGING</span>
+</footer>
+
+<script>
+// STARFIELD
+// ══════════════════════════════════════════
+// CANVAS STARFIELD
+// ══════════════════════════════════════════
+const starCanvas = document.getElementById('star-canvas');
+const sctx = starCanvas.getContext('2d');
+
+function resizeStars() {
+  starCanvas.width  = window.innerWidth;
+  starCanvas.height = window.innerHeight;
+}
+resizeStars();
+window.addEventListener('resize', () => { resizeStars(); generateStars(); drawStars(); });
+
+// Generate star data
+const STAR_COUNT = 380;
+let stars = [];
+
+function generateStars() {
+  stars = [];
+  const maxSz = isMobile ? 1.8 : 3.5;
+  const minSz = isMobile ? 0.4 : 0.6;
+  for (let i = 0; i < STAR_COUNT; i++) {
+    const sz = Math.random() * maxSz + minSz;
+    // Roughly 30% of stars are dramatic twinklers, rest are steady
+    const isTwinkler = Math.random() < 0.3;
+    stars.push({
+      x:      Math.random() * starCanvas.width,
+      y:      Math.random() * starCanvas.height,
+      sz,
+      baseA:  Math.random() * 0.4 + 0.6,
+      phase:  Math.random() * Math.PI * 2,
+      speed:  isTwinkler ? Math.random() * 1.8 + 0.8 : Math.random() * 0.3 + 0.1,
+      twinkleAmp: isTwinkler ? Math.random() * 0.45 + 0.35 : Math.random() * 0.08 + 0.02,
+      sizeAmp: isTwinkler ? Math.random() * 0.5 + 0.3 : 0.05,
+      r: 255,
+      g: Math.random() > 0.85 ? 240 : 255,
+      b: Math.random() > 0.9  ? 200 : 255,
+    });
+  }
+}
+
+const isMobile = window.innerWidth < 768;
+
+generateStars();
+
+function drawStars() {
+  sctx.clearRect(0, 0, starCanvas.width, starCanvas.height);
+  const t = performance.now() / 1000;
+
+  stars.forEach(star => {
+    const twinkle = Math.sin(t * star.speed + star.phase);
+    const alpha   = Math.max(0.05, Math.min(1, star.baseA + twinkle * star.twinkleAmp));
+    const size    = Math.max(0.3, star.sz + twinkle * star.sizeAmp);
+
+    sctx.save();
+    sctx.globalAlpha = alpha;
+
+    if (!isMobile && size > 1.5) {
+      sctx.shadowColor = `rgba(${star.r},${star.g},${star.b},0.8)`;
+      sctx.shadowBlur  = size * 4;
+    }
+
+    sctx.beginPath();
+    sctx.arc(star.x, star.y, size * 0.7, 0, Math.PI * 2);
+    sctx.fillStyle = `rgb(${star.r},${star.g},${star.b})`;
+    sctx.fill();
+
+    sctx.restore();
+  });
+}
+
+function dustLoop() {
+  dctx.clearRect(0, 0, dustCanvas.width, dustCanvas.height);
+
+  decayTick++;
+  if (decayTick > 2) {
+    scrollVel *= 0.86;
+    if (scrollVel < 0.04) {
+      scrollVel = 0;
+      const dirEl = document.getElementById('vel-dir');
+      if (dirEl) {
+        dirEl.textContent = '— idle';
+        dirEl.style.color = '#00a080';
+      }
+      const velBar = document.getElementById('vel-bar');
+      if (velBar) velBar.style.width = '0%';
+    }
+  }
+
+  // Skip dust on mobile when velocity is very low — saves GPU
+  if (!isMobile || scrollVel > 0.5) {
+    flecks.forEach(f => { f.update(); f.draw(); });
+  }
+}
+
+// ── SINGLE UNIFIED ANIMATION LOOP ──
+// Called after all dependencies initialized at bottom of script
+function mainLoop() {
+  drawStars();
+  dustLoop();
+  requestAnimationFrame(mainLoop);
+}
+
+// SAM-B STATUS ROTATION
+const statuses = [
+  '// ARCHIVE: 25% RESTORED',
+  '// ACCLIVITY: DECRYPTING...',
+  '// PRECIPICE: ACCESS DENIED',
+  '// ZENITH: ACCESS DENIED',
+  '// ABE: LOCATED',
+  '// DRAIG: THREAT LEVEL HIGH',
+  '// LOGGING CURRENT EVENTS',
+  '// SAM-B: OPERATIONAL',
+];
+let si = 0;
+setInterval(() => {
+  si = (si + 1) % statuses.length;
+  const el = document.getElementById('samb-status');
+  if (el) el.textContent = statuses[si];
+}, 4000);
+
+// SUBSCRIBE
+document.getElementById('sub-btn').addEventListener('click', function() {
+  const input = document.getElementById('sub-input');
+  const note = document.getElementById('sub-note');
+  if (input.value && input.value.includes('@')) {
+    this.textContent = 'LINKED ✦';
+    this.style.color = '#00ffcc';
+    this.style.borderColor = '#00ffcc';
+    input.value = '';
+    input.placeholder = 'uplink established';
+    note.textContent = '// UPLINK CONFIRMED. SAM-B WILL TRANSMIT WHEN RECORDS ARE READY.';
+    note.style.color = '#00a080';
+  }
+});
+
+// ══════════════════════════════════════════
+// SPACE DUST PARTICLE SYSTEM
+// ══════════════════════════════════════════
+const dustCanvas = document.getElementById('dust-canvas');
+const dctx = dustCanvas.getContext('2d');
+
+function resizeDust() {
+  dustCanvas.width  = window.innerWidth;
+  dustCanvas.height = window.innerHeight;
+}
+
+// Run resize immediately and again after a short delay to ensure proper sizing
+resizeDust();
+setTimeout(resizeDust, 100);
+window.addEventListener('resize', resizeDust);
+
+const DUST_COLORS = [
+  [255,255,255],[255,255,255],[255,255,255],[255,255,255],
+  [220,255,250],[220,255,250],
+  [0,255,204],
+  [180,240,235],
+];
+
+let scrollVel = 0;
+let scrollDir = -1;
+let decayTick = 0;
+let lastScrollY = window.scrollY;
+
+class Fleck {
+  constructor(randomY) { this.init(randomY); }
+
+  init(randomY) {
+    this.x    = Math.random() * dustCanvas.width;
+    this.y    = randomY
+      ? Math.random() * dustCanvas.height
+      : (scrollDir < 0 ? -4 : dustCanvas.height + 4);
+    this.sz   = Math.random() * 1.4 + 0.5;
+    this.col  = DUST_COLORS[Math.floor(Math.random() * DUST_COLORS.length)];
+    this.spd  = Math.random() * 0.5 + 0.5;
+    this.a    = 0;
+    this.maxA = Math.random() * 0.5 + 0.25;
+  }
+
+  update() {
+    this.y += scrollVel * this.spd * scrollDir * -1;
+    this.x += (Math.random() - 0.5) * scrollVel * 0.05;
+    const want = scrollVel > 0.2 ? this.maxA : 0;
+    this.a += (want - this.a) * 0.1;
+    if (this.y < -6 || this.y > dustCanvas.height + 6 ||
+        this.x < -6 || this.x > dustCanvas.width + 6) {
+      this.init(false);
+    }
+  }
+
+  draw() {
+    if (this.a < 0.01) return;
+    const [r,g,b] = this.col;
+    if (scrollVel > 10) {
+      const len = Math.min(scrollVel * this.spd * 0.35, 7);
+      dctx.beginPath();
+      dctx.strokeStyle = `rgba(${r},${g},${b},${this.a})`;
+      dctx.lineWidth = this.sz * 0.55;
+      dctx.moveTo(this.x, this.y);
+      dctx.lineTo(this.x, this.y + len * (scrollDir > 0 ? 1 : -1));
+      dctx.stroke();
+    } else {
+      dctx.beginPath();
+      dctx.arc(this.x, this.y, this.sz * 0.6, 0, Math.PI*2);
+      dctx.fillStyle = `rgba(${r},${g},${b},${this.a})`;
+      dctx.fill();
+    }
+  }
+}
+
+const flecks = Array.from({ length: 220 }, () => new Fleck(true));
+
+// Scroll tracking
+window.addEventListener('scroll', () => {
+  const y     = window.scrollY;
+  const delta = y - lastScrollY;
+  scrollVel = Math.abs(delta) * 1.3;
+  scrollDir = delta >= 0 ? 1 : -1;
+  decayTick = 0;
+  lastScrollY = y;
+
+  const pct = Math.min(scrollVel / 28 * 100, 100);
+  document.getElementById('vel-bar').style.width = pct + '%';
+  const dirEl = document.getElementById('vel-dir');
+  if (delta > 0) {
+    dirEl.textContent = '↓ descending';
+    dirEl.style.color = '#ff4444';
+  } else {
+    dirEl.textContent = '↑ ascending';
+    dirEl.style.color = '#ffd060';
+  }
+}, { passive: true });
+// ══════════════════════════════════════════
+// UTILITIES
+// ══════════════════════════════════════════
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+
+// ══════════════════════════════════════════
+// TYPING ENGINE
+// ══════════════════════════════════════════
+
+const CHAR_SPEED  = 28;
+const LINE_PAUSE  = 180;
+const SCROLL_ROOT = { threshold: 0.25 };
+
+// Boot complete flag — scroll blocks wait for this
+let bootComplete = false;
+
+// Create blinking block cursor
+function makeCursor(extraClass) {
+  const c = document.createElement('span');
+  c.className = 'typed-cursor' + (extraClass ? ' ' + extraClass : '');
+  return c;
+}
+
+// Type a string into an element character by character
+function typeText(el, text, highlights, showCursor, cursorClass) {
+  return new Promise(resolve => {
+    el.innerHTML = '';
+    const cursorClass2 = cursorClass ? `typed-cursor ${cursorClass}` : 'typed-cursor';
+    const cursorHTML = showCursor ? `<span class="${cursorClass2}"></span>` : '';
+    let i = 0;
+
+    function tick() {
+      if (i < text.length) {
+        const currentText = text.slice(0, i + 1);
+        let html = currentText;
+
+        if (highlights && highlights.length) {
+          highlights.forEach(phrase => {
+            if (currentText.includes(phrase)) {
+              html = html.replace(phrase, `<span class="typed-hi">${phrase}</span>`);
+            }
+          });
+        }
+
+        // Inject cursor inline within the HTML — always at the end
+        el.innerHTML = html + cursorHTML;
+        i++;
+        setTimeout(tick, CHAR_SPEED);
+      } else {
+        // Typing done — remove cursor if not meant to stay
+        if (!showCursor) {
+          el.innerHTML = el.innerHTML.replace(cursorHTML, '');
+        }
+        resolve();
+      }
+    }
+    tick();
+  });
+}
+
+// Type multiple lines sequentially
+async function typeLines(lines) {
+  for (let i = 0; i < lines.length; i++) {
+    const el         = lines[i];
+    const text       = el.dataset.text || '';
+    const isLast     = i === lines.length - 1;
+    const showCursor = true; // show on every line while typing
+    const keepCursor = isLast && el.dataset.cursor === 'true';
+
+    await typeText(el, text, null, showCursor, null);
+
+    if (!isLast) {
+      await sleep(LINE_PAUSE);
+      // Remove cursor from this line before moving to next
+      const cur = el.querySelector('.typed-cursor');
+      if (cur) cur.remove();
+    }
+  }
+}
+
+// Type a single scroll-triggered block
+async function typeBlock(el) {
+  const text        = el.dataset.text || '';
+  const showCursor  = el.dataset.cursor === 'true';
+  const cursorClass = el.dataset.cursorClass || null;
+  const highlights  = el.dataset.highlight
+    ? el.dataset.highlight.split('|')
+    : [];
+  await typeText(el, text, highlights, showCursor, cursorClass);
+}
+
+// ── HERO BOOT SEQUENCE ──
+async function runBootSequence() {
+  const lines = document.querySelectorAll('#hero-boot .typed-line');
+  await sleep(300);
+  await typeLines(Array.from(lines));
+  // Boot done — allow scroll blocks to type
+  bootComplete = true;
+  document.dispatchEvent(new Event('bootdone'));
+}
+
+// ── SCROLL-TRIGGERED TYPING ──
+// Scroll blocks wait until boot sequence finishes
+function initScrollTyping() {
+  const blocks  = document.querySelectorAll('.typed-block');
+  const typed   = new Set();
+  const waiting = new Set();
+
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting && !typed.has(entry.target)) {
+        if (bootComplete) {
+          typed.add(entry.target);
+          typeBlock(entry.target);
+          observer.unobserve(entry.target);
+        } else {
+          waiting.add(entry.target);
+        }
+      }
+    });
+  }, SCROLL_ROOT);
+
+  blocks.forEach(b => observer.observe(b));
+
+  // Fire waiting blocks when boot completes
+  document.addEventListener('bootdone', () => {
+    waiting.forEach(el => {
+      if (!typed.has(el)) {
+        typed.add(el);
+        typeBlock(el);
+      }
+    });
+    waiting.clear();
+  });
+}
+
+// Start once fonts ready
+document.fonts.ready.then(() => {
+  mainLoop();
+  runBootSequence();
+  initScrollTyping();
+});
+
+// NAV OVERLAY
+const navTrigger = document.getElementById('nav-trigger');
+const navOverlay = document.getElementById('nav-overlay');
+const navClose   = document.getElementById('overlay-close');
+
+function openNav() {
+  navOverlay.classList.add('open');
+  navTrigger.classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeNav() {
+  navOverlay.classList.remove('open');
+  navTrigger.classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+navTrigger.addEventListener('click', () => {
+  navOverlay.classList.contains('open') ? closeNav() : openNav();
+});
+
+navClose.addEventListener('click', closeNav);
+
+navOverlay.addEventListener('click', (e) => {
+  if (e.target === navOverlay) closeNav();
+});
+</script>
+
+</body>
+</html>
 
